@@ -5,9 +5,11 @@
 > being actively worked on, and the API may change as improvements are made.
 > Please check back for updates, and feel free to contribute or provide feedback!
 
-Lua-Framework is a lightweight REST API framework built with Lua, inspired by
-the structure of NestJS. It utilizes LuaSocket for networking and provides a
-simple yet powerful routing system to define endpoints and controllers.
+Hey there! 😊 Let me tell you about Lua-Framework — it's this super cool,
+lightweight REST API toolkit built with Lua that’s inspired by the awesome
+NestJS style! 🚀 It uses LuaSocket to handle all the networking magic and gives
+you an easy-to-use yet super powerful way to set up your endpoints and
+controllers. Perfect for making your API projects smooth and fun! 🎉
 
 ## Features
 
