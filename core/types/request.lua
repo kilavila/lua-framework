@@ -1,0 +1,13 @@
+---@meta
+
+---@class HttpRequest
+---The request body
+---@field body table|nil
+---The request headers
+---@field headers table
+---The HTTP method
+---@field method string
+---The URL queries
+---@field params table|nil
+---The route without URL querystring
+---@field route string

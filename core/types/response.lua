@@ -1,0 +1,13 @@
+---@meta
+
+---@class HttpResponse
+---The HTTP response status code, f.ex: 200
+---
+---https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
+---@field status number
+---The response data(Optional)
+---@field data? table
+---The response errors(Optional)
+---@field errors? table
+---The response meta data(Optional)
+---@field meta? table
