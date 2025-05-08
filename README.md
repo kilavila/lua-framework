@@ -61,7 +61,7 @@ luarocks install luasocket lua-cjson
 To start the server, run the following command:
 
 ```bash
-lua main.lua
+lua src/main.lua
 ```
 
 ```bash
