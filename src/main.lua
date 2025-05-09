@@ -29,6 +29,9 @@ local bootstrap = function()
     --   ["http://another-example.com"] = true,
     -- },
 
+    -- Do not show ascii art on server start
+    -- ascii_art = false,
+
     -- Sets allow origin to: *
     -- which will allow all origins
     enable_cors = true,

@@ -7,6 +7,8 @@
 ---@field headers table
 ---The HTTP method
 ---@field method string
+---The request origin
+---@field origin string
 ---The URL queries
 ---@field params table|nil
 ---The route without URL querystring

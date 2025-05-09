@@ -3,11 +3,48 @@ local FactoryRouter = require("core.factory-router")
 local Logger = require("core.utils.logging")
 local Routes = require("src.router")
 
+local print_ascii_art = function()
+  local ascii = "\r\n"
+    .. "\r\n"
+    .. "                      ---  --   --  --        -------      \r\n"
+    .. "                  ---                   --  -----------    \r\n"
+    .. "               --                           ------------   \r\n"
+    .. "            --          -------------       ------------   \r\n"
+    .. "                    --------------------    -----------    \r\n"
+    .. "         --      --------------------------   -------      \r\n"
+    .. "               ---------------------     ----              \r\n"
+    .. "       -      --------------------         ---      --     \r\n"
+    .. "             --------------------           ---            \r\n"
+    .. "     --     ---------------------           ----           \r\n"
+    .. "     -     ----------------------          ------     -    \r\n"
+    .. "           ------------------------      --------          \r\n"
+    .. "    --     ------  -------------------------------    --   \r\n"
+    .. "           ------ --------------------- ----------         \r\n"
+    .. "    --     ------ --------  ----  --  ---  -------    --   \r\n"
+    .. "           ------ --------  ----  -------- ------          \r\n"
+    .. "     --    ------ --------- ----  --   --- ------     -    \r\n"
+    .. "            ----- --------  ----  -- ----- -----     --    \r\n"
+    .. "      -      ----        --    ------    -  ---            \r\n"
+    .. "       -      --------------------------------      --     \r\n"
+    .. "                --------- Framework ---------              \r\n"
+    .. "         -        ------ by kilavila ------       -        \r\n"
+    .. "           --       --------------------        -          \r\n"
+    .. "                        ------------           -           \r\n"
+    .. "              ---                          ---             \r\n"
+    .. "                  --                    --                 \r\n"
+    .. "                      --- ---  --  ---                     \r\n"
+    .. "\r\n"
+    .. "\r\n"
+
+  print("\27[34m" .. ascii .. "\27[0m")
+end
+
 local Factory = {
   configuration = {
     enable_cors = false,
     allowed_origins = nil,
     port = 5000,
+    ascii_art = true,
   },
 }
 Factory.__index = Factory
@@ -31,6 +68,10 @@ end
 
 function Factory:listen()
   local server = socket.bind("*", self.configuration.port)
+
+  if self.configuration.ascii_art then
+    print_ascii_art()
+  end
 
   self.logger:success("[Core] Starting Lua Server...")
   self.logger:success("[Core] Listening on port: " .. self.configuration.port .. "\r\n")
