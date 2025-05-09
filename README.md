@@ -81,6 +81,10 @@ lua src/main.lua
 
 The server will start listening on port 3000.
 
+> [!TIP]
+> Everything you need is in the `src` directory.
+> Read the comments in the files to get started.
+
 ### Defining Endpoints
 
 Endpoints are defined in the `router.lua` file. Each endpoint is associated with a controller and a specific HTTP method. For example:
