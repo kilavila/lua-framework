@@ -29,9 +29,9 @@ controllers. Perfect for making your API projects smooth and fun! 🎉
 │   ├── types/              # LuaCATS (Lua Comment And Type System) annotations
 │   │   └── ...
 │   └── utils/
-│       ├── cors.lua               # Cors utility
-│       ├── http.lua               # Http response utility
-│       ├── logging.lua            # Logging utility
+│       ├── cors.lua        # Cors utility
+│       ├── http.lua        # Http response utility
+│       ├── logging.lua     # Logging utility
 │       └── ...
 │
 └── src/
