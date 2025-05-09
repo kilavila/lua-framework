@@ -1,17 +1,59 @@
-local http = require("core.utils.http")
-local log = require("core.utils.logging")
-local extract = require("core.utils.request_extract")
+local RequestExtractor = require("core.utils.request_extractor")
+local Cors = require("core.utils.cors")
+local Http = require("core.utils.http")
+local Logger = require("core.utils.logging")
 
-M = {}
+local FactoryRouter = {}
+FactoryRouter.__index = FactoryRouter
+
+function FactoryRouter:new()
+  local instance = setmetatable({}, FactoryRouter)
+  instance.request_extractor = RequestExtractor:new()
+  instance.cors = Cors:new()
+  instance.http = Http:new()
+  instance.logger = Logger:new()
+  return instance
+end
 
 ---@type fun(): nil
 ---@param client table
 ---@param request table
 ---@param routes table
-function M:handle_request(client, request, routes)
-  log:info("[Request] " .. request)
+---@param configuration table
+function FactoryRouter:handle_request(client, request, routes, configuration)
+  print("")
+  self.logger:info("[Request] " .. request)
+
+  local headers = self.request_extractor:headers(client)
 
   local method, url = request:match("^(%S+) (%S+)")
+
+  -- TODO: Fix same-origin
+  -- TODO: Test origins on the server
+  -- local server_origin = headers["host"]
+  local origin = client:getpeername()
+
+  if configuration.allowed_origins then
+    self.cors:enable(configuration.allowed_origins)
+  elseif configuration.enable_cors then
+    self.cors:enable()
+  end
+
+  if method == "OPTIONS" then
+    self.cors:preflight(client, method, origin)
+    return
+  end
+
+  local origin_header = self.cors:get_origin_header(origin)
+  if not origin_header then
+    local res = "HTTP/1.1 403 Forbidden\r\n"
+      .. "Content-Type: text/plain\r\n"
+      .. "\r\n"
+      .. "CORS policy: Access denied.\n"
+
+    client:send(res)
+    return
+  end
 
   local route = string.match(url, "([^?]+)")
   local controller = string.match(route, "^(/%w+)")
@@ -27,21 +69,19 @@ function M:handle_request(client, request, routes)
     end
   end
 
-  local headers = extract:headers(client)
   local body = nil
   if headers["content-length"] then
-    -- FIX: Very slow!
-    -- TODO: Test various HTTP methods with and without request body
-    body = extract:body(client, headers["content-length"])
+    body = self.request_extractor:body(client, headers["content-length"])
   end
 
   ---@type HttpRequest
   local req = {
-    method = method,
-    route = route,
-    headers = headers,
     body = body,
+    headers = headers,
+    method = method,
+    origin = origin,
     params = parameters,
+    route = route,
   }
 
   local path_found = false
@@ -56,7 +96,7 @@ function M:handle_request(client, request, routes)
           local response = _entity.fun(req)
 
           if response then
-            http:respond(client, response)
+            self.http:respond(client, response, origin_header)
           else
             response = {
               status = 500,
@@ -65,7 +105,7 @@ function M:handle_request(client, request, routes)
               },
             }
 
-            http:respond(client, response)
+            self.http:respond(client, response, origin_header)
           end --[[if response]]
         end --[[if _endpoint == endpoint and _entity.method == method]]
       end --[[for _endpoint, _entity in pairs(_controller.entities)]]
@@ -82,8 +122,8 @@ function M:handle_request(client, request, routes)
       },
     }
 
-    http:respond(client, response)
+    self.http:respond(client, response, origin_header)
   end
 end
 
-return M
+return FactoryRouter

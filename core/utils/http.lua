@@ -1,6 +1,12 @@
 local json = require("cjson")
 
-M = {}
+local Http = {}
+Http.__index = Http
+
+function Http:new()
+  local instance = setmetatable({}, Http)
+  return instance
+end
 
 local responses = {
   -- Successful responses (200 – 299)
@@ -58,7 +64,7 @@ local responses = {
   ["510"] = "511 Network Authentication Required",
 }
 
-function M:respond(client, response)
+function Http:respond(client, response, origin_header)
   local status = responses[tostring(response.status)]
   local response_json = json.encode({
     data = response.data,
@@ -68,6 +74,9 @@ function M:respond(client, response)
 
   local res = "HTTP/1.1 "
     .. status
+    .. "\r\n"
+    .. "Access-Control-Allow-Origin: "
+    .. origin_header
     .. "\r\n"
     .. "Content-Type: application/json\r\n"
     .. "Content-Length: "
@@ -79,4 +88,4 @@ function M:respond(client, response)
   client:send(res)
 end
 
-return M
+return Http

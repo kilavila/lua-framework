@@ -1,6 +1,12 @@
-M = {}
+local RequestExtractor = {}
+RequestExtractor.__index = RequestExtractor
 
-function M:headers(client)
+function RequestExtractor:new()
+  local instance = setmetatable({}, RequestExtractor)
+  return instance
+end
+
+function RequestExtractor:headers(client)
   local headers = {}
 
   while true do
@@ -18,10 +24,10 @@ function M:headers(client)
   return headers
 end
 
-function M:body(client, content_length)
+function RequestExtractor:body(client, content_length)
   local body = ""
   body = client:receive(content_length)
   return body
 end
 
-return M
+return RequestExtractor

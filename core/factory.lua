@@ -1,42 +1,48 @@
 local socket = require("socket")
+local FactoryRouter = require("core.factory-router")
+local Logger = require("core.utils.logging")
+local Routes = require("src.router")
 
-local factory_router = require("core.factory-router")
-local log = require("core.utils.logging")
-
-local routes = require("src.router")
-
-M = {
-  _config = {
-    port = 3000,
+local Factory = {
+  configuration = {
+    enable_cors = false,
+    allowed_origins = nil,
+    port = 5000,
   },
 }
+Factory.__index = Factory
 
--- TODO: Create proper config and merging of config tables
-function M:config(cfg)
-  if cfg then
-    M._config = cfg
-  end
-
-  return self
+function Factory:new()
+  local instance = setmetatable({}, Factory)
+  instance.logger = Logger:new()
+  instance.factory_router = FactoryRouter:new()
+  return instance
 end
 
-function M:listen()
-  local server = socket.bind("*", self._config.port)
+---@type fun(): nil
+---@param config? table
+function Factory:config(config)
+  if config then
+    for key, value in pairs(config) do
+      self.configuration[key] = value
+    end
+  end
+end
 
-  log:success("[Core] Starting Lua Server...")
-  log:success("[Core] Listening on port: " .. self._config.port)
-  print("")
+function Factory:listen()
+  local server = socket.bind("*", self.configuration.port)
 
-  for _route, _controller in pairs(routes) do
+  self.logger:success("[Core] Starting Lua Server...")
+  self.logger:success("[Core] Listening on port: " .. self.configuration.port .. "\r\n")
+
+  for _route, _controller in pairs(Routes) do
     local log_controller = string.format("[Router] %s {%s}:", _controller.name, _route)
-    log:success(log_controller)
+    self.logger:success(log_controller)
 
     for _endpoint, _entity in pairs(_controller.entities) do
       local log_entity = string.format("[Router] Mapped {%s, %s}", _endpoint, _entity.method)
-      log:success(log_entity)
+      self.logger:success(log_entity)
     end
-
-    print("")
   end
 
   while true do
@@ -47,7 +53,7 @@ function M:listen()
       local request = client:receive("*l")
       if request then
         -- TODO: Implement function decorator for timing functions?
-        factory_router:handle_request(client, request, routes)
+        self.factory_router:handle_request(client, request, Routes, self.configuration)
       end
 
       client:close()
@@ -57,4 +63,4 @@ function M:listen()
   end
 end
 
-return M
+return Factory

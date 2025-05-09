@@ -1,4 +1,10 @@
-M = {}
+local Logger = {}
+Logger.__index = Logger
+
+function Logger:new()
+  local instance = setmetatable({}, Logger)
+  return instance
+end
 
 local colors = {
   reset = "\27[0m",
@@ -36,30 +42,30 @@ end
 
 ---@type fun(): nil
 ---@param message string
-function M:success(message)
+function Logger:success(message)
   local msg = format("OK", colors.green, message)
   print(msg)
 end
 
 ---@type fun(): nil
 ---@param message string
-function M:info(message)
+function Logger:info(message)
   local msg = format("INFO", colors.blue, message)
   print(msg)
 end
 
 ---@type fun(): nil
 ---@param message string
-function M:warn(message)
+function Logger:warn(message)
   local msg = format("WARN", colors.yellow, message)
   print(msg)
 end
 
 ---@type fun(): nil
 ---@param message string
-function M:error(message)
+function Logger:error(message)
   local msg = format("ERROR", colors.red, message)
   print(msg)
 end
 
-return M
+return Logger

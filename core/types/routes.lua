@@ -11,5 +11,5 @@
 ---@field name string
 ---@field entities Entities
 
----@class Router
+---@class Routes
 ---@field [string] Controller
