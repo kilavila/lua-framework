@@ -23,13 +23,20 @@ controllers. Perfect for making your API projects smooth and fun! 🎉
 ```
 /lua-framework
 │
-├── core
-│   ├── factory.lua        # Application factory for configuration and initialization
-│   └── utils
-│       └── logging.lua    # Logging utility
+├── core/
+│   ├── factory.lua         # Application factory for configuration and initialization
+│   ├── factory-router.lua  # Application router for handling requests and responses
+│   ├── types/              # LuaCATS (Lua Comment And Type System) annotations
+│   │   └── ...
+│   └── utils/
+│       ├── cors.lua               # Cors utility
+│       ├── http.lua               # Http response utility
+│       ├── logging.lua            # Logging utility
+│       └── ...
 │
-└── src
+└── src/
     ├── app_controller.lua  # Controller for handling app-related endpoints
+    ├── app_service.lua     # Service for handling data storage and retrieval
     ├── main.lua            # Entry point of the application
     └── router.lua          # Router for defining API endpoints
 ```
@@ -79,9 +86,9 @@ The server will start listening on port 3000.
 Endpoints are defined in the `router.lua` file. Each endpoint is associated with a controller and a specific HTTP method. For example:
 
 ```lua
-local app_controller = require("src.app_controller")
+local AppController = require("src.app_controller")
 
-M = {
+local Routes = {
   ["/app"] = {
     name = "app_controller",
     entities = {
@@ -93,7 +100,7 @@ M = {
   },
 }
 
-return M
+return Routes
 ```
 
 ### Creating Controllers
@@ -101,8 +108,32 @@ return M
 Controllers are defined in separate files (e.g., `app_controller.lua`). Each controller can have multiple functions corresponding to different endpoints. For example:
 
 ```lua
-M.status = function(request)
-  -- Handle the request and return a response
+local AppService = require("src.app_service")
+
+local AppController = {}
+
+function AppController.status(request)
+  -- Call the AppService status function
+  -- Send request body, params etc
+
+  local response = AppService.status()
+  return response
+end
+
+return AppController
+```
+
+### Creating Services
+
+Services are also defined in separate files (e.g., `app_service.lua`). A service should handle data storage and retrieval. For example:
+
+```lua
+local AppService = {}
+
+function AppService.status()
+  -- Handle request body, params etc
+  -- Retrieve or store data in database
+
   local response = {
     status = 200,
     data = {
@@ -111,6 +142,8 @@ M.status = function(request)
   }
   return response
 end
+
+return AppService
 ```
 
 ### Testing Endpoints
@@ -133,6 +166,7 @@ http GET :3000/app/status
 
 ```bash
 HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
 Connection: close
 Content-Length: 37
 Content-Type: application/json
