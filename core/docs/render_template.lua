@@ -66,9 +66,6 @@ function Docs:route_handler(client, method, controller, endpoint)
   --
   -- TODO: Create new routes table for docs and static files
 
-  print("controller: ", controller)
-  print("endpoint: ", endpoint)
-
   if method == "GET" and controller == "/docs" then
     self:serve_html(client)
     return
