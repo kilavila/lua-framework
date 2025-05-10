@@ -3,6 +3,9 @@ local Cors = require("core.utils.cors")
 local Http = require("core.utils.http")
 local Logger = require("core.utils.logging")
 
+local Docs = require("core.docs.render_template")
+
+-- FIX: Refactor file
 local FactoryRouter = {}
 FactoryRouter.__index = FactoryRouter
 
@@ -12,6 +15,7 @@ function FactoryRouter:new()
   instance.cors = Cors:new()
   instance.http = Http:new()
   instance.logger = Logger:new()
+  instance.docs = Docs:new()
   return instance
 end
 
@@ -27,6 +31,17 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
   local headers = self.request_extractor:headers(client)
 
   local method, url = request:match("^(%S+) (%S+)")
+
+  -- TODO: Create new SSR module for the src dir
+  -- TODO: Create new Docs module for serving HTML, CSS, JS and static files
+  --
+  -- TODO: Create new routes table for docs and static files
+  if method == "GET" and url == "/docs" then
+    self.docs:serve_html(client)
+    return
+  elseif method == "GET" and url == "/styles.css" then
+    self.docs:serve_static_file("core/docs/styles.css", client)
+  end
 
   -- TODO: Fix same-origin
   -- TODO: Test origins on the server

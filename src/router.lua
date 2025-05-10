@@ -5,6 +5,12 @@ local api_key_guard = require("src.guards.api_key_guard")
 -- It acts as an intermediary between the incoming requests and the service functions,
 -- processing the requests and returning appropriate responses.
 --
+-- ┌─────────────────────┐                  ┌─────────────────────┐       ┌─────────────────────┐       ┌─────────────────────┐
+-- │                     │   HTTP Request   │                     │       │                     │       │                     │
+-- │     Client Side     │ ────────────────▶│       Router        │ ─────▶│     Controller      │ ─────▶│       Service       │
+-- │                     │                  │                     │       │                     │       │                     │
+-- └─────────────────────┘                  └─────────────────────┘       └─────────────────────┘       └─────────────────────┘
+--
 -- The routing mechanism determines which controller is responsible for handling
 -- each incoming request based on the request's URL and HTTP method.
 --

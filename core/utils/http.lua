@@ -1,5 +1,6 @@
 local json = require("cjson")
 
+-- TODO: Add exception filters?
 local Http = {}
 Http.__index = Http
 
