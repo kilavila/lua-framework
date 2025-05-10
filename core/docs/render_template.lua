@@ -1,3 +1,5 @@
+-- FIX: Refactor file
+
 local Docs = {}
 Docs.__index = Docs
 
@@ -57,6 +59,24 @@ function Docs:serve_html(client)
   client:send("Content-Length: " .. #content .. "\r\n")
   client:send("\r\n")
   client:send(content)
+end
+
+function Docs:route_handler(client, method, controller, endpoint)
+  -- TODO: Create new Docs module for serving HTML, CSS, JS and static files
+  --
+  -- TODO: Create new routes table for docs and static files
+
+  print("controller: ", controller)
+  print("endpoint: ", endpoint)
+
+  if method == "GET" and controller == "/docs" then
+    self:serve_html(client)
+    return
+  elseif method == "GET" and controller == "/static" and endpoint == "/styles.css" then
+    -- TODO: Check endpoint for which static file to return
+    self:serve_static_file("core/docs/styles.css", client)
+    return
+  end
 end
 
 return Docs

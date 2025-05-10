@@ -39,7 +39,6 @@ local print_ascii_art = function()
   print("\27[34m" .. ascii .. "\27[0m")
 end
 
--- FIX: Refactor file
 local Factory = {
   configuration = {
     enable_cors = false,

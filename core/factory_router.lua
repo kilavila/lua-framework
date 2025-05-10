@@ -1,18 +1,15 @@
-local RequestExtractor = require("core.utils.request_extractor")
-local Cors = require("core.utils.cors")
+local RequestHandler = require("core.utils.request_handler")
 local Http = require("core.utils.http")
 local Logger = require("core.utils.logging")
 
 local Docs = require("core.docs.render_template")
 
--- FIX: Refactor file
 local FactoryRouter = {}
 FactoryRouter.__index = FactoryRouter
 
 function FactoryRouter:new()
   local instance = setmetatable({}, FactoryRouter)
-  instance.request_extractor = RequestExtractor:new()
-  instance.cors = Cors:new()
+  instance.request_handler = RequestHandler:new()
   instance.http = Http:new()
   instance.logger = Logger:new()
   instance.docs = Docs:new()
@@ -28,90 +25,28 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
   print("")
   self.logger:info("[Request] " .. request)
 
-  local headers = self.request_extractor:headers(client)
-
-  local method, url = request:match("^(%S+) (%S+)")
-
-  -- TODO: Create new SSR module for the src dir
-  -- TODO: Create new Docs module for serving HTML, CSS, JS and static files
-  --
-  -- TODO: Create new routes table for docs and static files
-  if method == "GET" and url == "/docs" then
-    self.docs:serve_html(client)
-    return
-  elseif method == "GET" and url == "/styles.css" then
-    self.docs:serve_static_file("core/docs/styles.css", client)
-  end
-
-  -- TODO: Fix same-origin
-  -- TODO: Test origins on the server
-  -- local server_origin = headers["host"]
-  local origin = client:getpeername()
-
-  if configuration.allowed_origins then
-    self.cors:enable(configuration.allowed_origins)
-  elseif configuration.enable_cors then
-    self.cors:enable()
-  end
-
-  if method == "OPTIONS" then
-    self.cors:preflight(client, method, origin)
+  local parsed_request = self.request_handler:parse(client, request, configuration)
+  if not parsed_request then
     return
   end
 
-  local origin_header = self.cors:get_origin_header(origin)
-  if not origin_header then
-    local res = "HTTP/1.1 403 Forbidden\r\n"
-      .. "Content-Type: text/plain\r\n"
-      .. "\r\n"
-      .. "CORS policy: Access denied.\n"
+  -- return HTML and static files for /docs endpoint
+  self.docs:route_handler(client, parsed_request.method, parsed_request.controller, parsed_request.endpoint)
 
-    client:send(res)
-    return
-  end
-
-  local route = string.match(url, "([^?]+)")
-  local controller = string.match(route, "^(/%w+)")
-  local endpoint = string.match(route, "^/%w+(.*)$")
-
-  local params = string.match(url, "[^?]+?(.*)$")
-  local parameters = {}
-
-  if params then
-    for param in string.gmatch(params, "([^&]+)") do
-      local key, value = string.match(param, "^([^=]+)=(.*)$")
-      parameters[key] = value
-    end
-  end
-
-  local body = nil
-  if headers["content-length"] then
-    body = self.request_extractor:body(client, headers["content-length"])
-  end
-
-  ---@type HttpRequest
-  local req = {
-    body = body,
-    headers = headers,
-    method = method,
-    origin = origin,
-    params = parameters,
-    route = route,
-  }
-
+  -- if false, return 404
   local path_found = false
 
   for _route, _controller in pairs(routes) do
-    if _route == controller then
+    if _route == parsed_request.controller then
       for _endpoint, _entity in pairs(_controller.entities) do
-        if _endpoint == endpoint and _entity.method == method then
+        if _endpoint == parsed_request.endpoint and _entity.method == parsed_request.method then
           path_found = true
 
           ---@type HttpResponse
-          local response = _entity.fun(req)
+          local response = _entity.fun(parsed_request.req)
 
           if response then
-            self.http:respond(client, response, origin_header)
+            self.http:respond(client, response, parsed_request.origin_header)
           else
             response = {
               status = 500,
@@ -120,7 +55,7 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
               },
             }
 
-            self.http:respond(client, response, origin_header)
+            self.http:respond(client, response, parsed_request.origin_header)
           end --[[if response]]
         end --[[if _endpoint == endpoint and _entity.method == method]]
       end --[[for _endpoint, _entity in pairs(_controller.entities)]]
@@ -133,11 +68,11 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
       status = 404,
       errors = {
         { message = "The server cannot find the requested resource." },
-        { message = "Invalid endpoint: " .. req.route },
+        { message = "Invalid endpoint: " .. parsed_request.req.route },
       },
     }
 
-    self.http:respond(client, response, origin_header)
+    self.http:respond(client, response, parsed_request.origin_header)
   end
 end
 

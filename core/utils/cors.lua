@@ -41,7 +41,7 @@ end
 ---@param origin any
 function Cors:preflight(client, method, origin)
   if method == "OPTIONS" then
-    local origin_header = self.get_origin_header(origin)
+    local origin_header = self:get_origin_header(origin)
 
     if origin_header then
       local res = "HTTP/1.1 204 No Content\r\n"
