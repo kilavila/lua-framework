@@ -20,6 +20,7 @@ local colors = {
   magenta = "\27[35m",
   cyan = "\27[36m",
   white = "\27[37m",
+  gray = "\27[30m",
 }
 
 local function log_tests(comment, test)
@@ -29,8 +30,14 @@ local function log_tests(comment, test)
     overall_status = colors.red .. "FAIL" .. colors.reset
   end
 
-  local test_title =
-    string.format("[ %s ] %s - %.3fms", overall_status, comment, (test.time.stop - test.time.start) * 1000)
+  local test_title = string.format(
+    "[ %s ] %s - %s%.3fms%s",
+    overall_status,
+    comment,
+    colors.yellow,
+    (test.time.stop - test.time.start) * 1000,
+    colors.reset
+  )
   print("")
   print(test_title)
 
@@ -135,16 +142,28 @@ function Test:expect(comment, data)
 end
 
 function Test:summary()
-  local passed = string.format("Passed tests : %s%s passed%s", colors.green, self.passed, colors.reset)
-  local failed = string.format("Failed tests : %s%s failed%s", colors.red, self.failed, colors.reset)
-  local total = string.format("Total tests  : %s test(s)", self.total)
-  local time = string.format("Total time   : %.3fms", self.time)
+  local summary = string.format("[ %sSUMMARY%s ]", colors.blue, colors.reset)
+  local passed = string.format("%s𜱺 %s passed%s", colors.green, self.passed, colors.reset)
+  local failed = string.format("%s𜱺 %s failed%s", colors.red, self.failed, colors.reset)
+  local total = string.format(
+    "Ran %s%s test(s)%s in %s%.3fms%s",
+    colors.blue,
+    self.total,
+    colors.reset,
+    colors.yellow,
+    self.time,
+    colors.reset
+  )
+  local divider = string.format("%s-----------%s", colors.gray, colors.reset)
 
   print("")
+  print(divider)
+  print("")
+  print(summary)
   print(passed)
   print(failed)
+  print("")
   print(total)
-  print(time)
 end
 
 return Test

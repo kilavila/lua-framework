@@ -17,7 +17,6 @@ local bootstrap = function()
   -- TODO: Encryption and hashing
   -- TODO: User defined types in src/
   --
-  -- TODO: Swagger like documentation?
   -- TODO: Rate limiting?
   -- TODO: Websockets?
   -- TODO: Add caching?

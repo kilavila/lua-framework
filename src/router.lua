@@ -57,16 +57,50 @@ local Routes = {
       -- ["/"] -- Not working: This entity lacks a name.
       -- ["/status/example"] -- OK: This entity is valid and properly defined.
 
-      ["/status"] = {
-        method = "GET", -- HTTP method for this endpoint.
-        fun = AppController.status, -- Function to handle requests to this endpoint.
-      },
-
       -- Example of a request using a guard decorator for API key validation.
       ["/test"] = {
         method = "GET", -- HTTP method for this endpoint.
         fun = api_key_guard(AppController.test), -- Function wrapped with the guard decorator.
-      },
+        docs = {
+          description = "Endpoint for testing API Key guard",
+          request = {
+            "http GET :3000/app/test 'x-API-key: my_secret_key'",
+          },
+          response = {
+            "{",
+            '  "data": [',
+            '    { "message": "Congrats!" }',
+            "  ]",
+            "}",
+          },
+        },
+      }, -- ["/test"]
+
+      ["/status"] = {
+        method = "GET", -- HTTP method for this endpoint.
+        fun = AppController.status, -- Function to handle requests to this endpoint.
+        docs = {
+          description = "Check status of the API",
+          -- parameters = {
+          --   {
+          --     name = "version",
+          --     description = "What version to use.",
+          --     type = "string",
+          --     required = "false",
+          --   },
+          -- },
+          request = {
+            "http GET :3000/app/status",
+          },
+          response = {
+            "{",
+            '  "data": [',
+            '    { "message": "Server online!" }',
+            "  ]",
+            "}",
+          },
+        },
+      }, -- ["/status"]
     },
   },
 }

@@ -31,7 +31,7 @@ end
 
 function Docs:serve_html(client)
   local data = {
-    title = "Lua-Framework",
+    title = "Docs | Lua-Framework",
     heading = "API Documentation",
     description = "Lightweight REST API framework built with Lua, inspired by the structure of NestJS. Utilising LuaSocket for networking.",
   }
