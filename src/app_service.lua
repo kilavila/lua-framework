@@ -20,4 +20,9 @@ function AppService.status()
   return response
 end
 
+function AppService.echo(message)
+  local response = "Echo: " .. message
+  return response
+end
+
 return AppService
