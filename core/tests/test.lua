@@ -1,4 +1,8 @@
+local Logger = require("core.utils.logging")
+
+-- INFO: Test
 local Test = {
+  current = {},
   failed = 0,
   passed = 0,
   total = 0,
@@ -6,11 +10,14 @@ local Test = {
 }
 Test.__index = Test
 
+-- INFO: new()
 function Test:new()
   local instance = setmetatable({}, Test)
+  local logger = Logger:new()
   return instance
 end
 
+-- INFO: colors
 local colors = {
   reset = "\27[0m",
   red = "\27[31m",
@@ -23,38 +30,7 @@ local colors = {
   gray = "\27[30m",
 }
 
-local function log_tests(comment, test)
-  local overall_status = colors.green .. "PASS" .. colors.reset
-
-  if not test.passed then
-    overall_status = colors.red .. "FAIL" .. colors.reset
-  end
-
-  local test_title = string.format(
-    "[ %s ] %s - %s%.3fms%s",
-    overall_status,
-    comment,
-    colors.yellow,
-    (test.time.stop - test.time.start) * 1000,
-    colors.reset
-  )
-  print("")
-  print(test_title)
-
-  for _, check in pairs(test.checks) do
-    local msg = ""
-    local color = colors.green
-    local indent = "         "
-
-    if not check.pass then
-      color = colors.red
-    end
-    msg = string.format(indent .. "%s𜱺%s %s", color, colors.reset, check.message)
-
-    print(msg)
-  end
-end
-
+-- INFO: check_tables()
 function Test:check_tables(result, expected)
   local tables_are_identical = true
 
@@ -74,73 +50,125 @@ function Test:check_tables(result, expected)
   return tables_are_identical
 end
 
-function Test:expect(comment, data)
-  local new_test = {
-    checks = {},
-    passed = true,
-    time = {},
-  }
-  new_test.time.start = os.clock()
+-- INFO: expect()
+function Test:expect(title, func)
+  self.current.time = {}
+  self.current.time.start = os.clock()
+  self.current.title = title
+  self.current.result = func
+  self.current.passed = true
+  self.current.tests = {}
+  return self
+end
 
-  local result = data.func
-
-  if data.type then
-    if type(result) == data.type then
-      table.insert(new_test.checks, {
-        pass = true,
-        message = "Correct return type",
-      })
-    else
-      table.insert(new_test.checks, {
-        pass = false,
-        message = "Wrong return type: " .. type(result) .. ". Expected return type: " .. data.type,
-      })
-      new_test.passed = false
-    end
+-- INFO: to_be()
+function Test:to_be(result)
+  if not result then
+    self.logger:error("Function 'to_be()' expects a parameter")
   end
+
+  if not self.current.result then
+    self.logger:error("Could not find a return value from function, remember to call ':expect()'")
+  end
+
+  local pass = true
+  local message = "Correct return value"
 
   if type(result) == "table" then
-    local is_identical = self:check_tables(result, data.result)
-    if is_identical then
-      table.insert(new_test.checks, {
-        pass = true,
-        message = "Correct return value",
-      })
-    else
-      table.insert(new_test.checks, {
-        pass = false,
-        message = "Wrong return value",
-      })
-      new_test.passed = false
+    local is_identical = self:check_tables(self.current.result, result)
+    if not is_identical then
+      pass = false
+      message = "Wrong return value"
+      self.current.passed = false
     end
   else
-    if result == data.result then
-      table.insert(new_test.checks, {
-        pass = true,
-        message = "Correct return value",
-      })
-    else
-      table.insert(new_test.checks, {
-        pass = false,
-        message = "Wrong return value",
-      })
-      new_test.passed = false
+    if self.current.result ~= result then
+      pass = false
+      message = "Wrong return value"
+      self.current.passed = false
     end
   end
 
-  if new_test.passed then
+  table.insert(self.current.tests, {
+    pass = pass,
+    message = message,
+    expected = result,
+    response = self.current.result,
+  })
+
+  return self
+end
+
+-- INFO: to_be_type()
+function Test:to_be_type(expected_type)
+  if not expected_type then
+    self.logger:error("Function 'to_be_type()' expects a parameter")
+  end
+
+  if not self.current.result then
+    self.logger:error("Could not find a return value from function, remember to call ':expect()'")
+  end
+
+  local pass = true
+  local message = "Correct return type"
+
+  if type(self.current.result) ~= expected_type then
+    pass = false
+    message = "Wrong return type"
+    self.current.passed = false
+  end
+
+  table.insert(self.current.tests, {
+    pass = pass,
+    message = message,
+    expected = expected_type,
+    response = type(self.current.result),
+  })
+
+  return self
+end
+
+-- INFO: log()
+function Test:log()
+  local overall_status = colors.green .. "PASS" .. colors.reset
+
+  if self.current.passed then
     self.passed = self.passed + 1
   else
     self.failed = self.failed + 1
+    overall_status = colors.red .. "FAIL" .. colors.reset
   end
 
   self.total = self.total + 1
-  new_test.time.stop = os.clock()
-  log_tests(comment, new_test)
+  self.current.time.stop = os.clock()
+  self.time = self.time + ((self.current.time.stop - self.current.time.start) * 1000)
 
-  self.time = self.time + ((new_test.time.stop - new_test.time.start) * 1000)
+  local test_title = string.format(
+    "[ %s ] %s - %s%.3fms%s",
+    overall_status,
+    self.current.title,
+    colors.yellow,
+    (self.current.time.stop - self.current.time.start) * 1000,
+    colors.reset
+  )
+  print("")
+  print(test_title)
+
+  for _, check in pairs(self.current.tests) do
+    local msg = ""
+    local color = colors.green
+    local indent = "         "
+
+    if not check.pass then
+      color = colors.red
+    end
+    msg = string.format(indent .. "%s𜱺%s %s", color, colors.reset, check.message)
+
+    print(msg)
+  end
 end
 
+-- INFO: summary()
 function Test:summary()
   local summary = string.format("[ %sSUMMARY%s ]", colors.blue, colors.reset)
   local passed = string.format("%s𜱺 %s passed%s", colors.green, self.passed, colors.reset)
@@ -167,3 +195,33 @@ function Test:summary()
 end
 
 return Test
+
+-- exact:
+-- not_to_be
+-- not_to_be_type
+--
+-- equal but not exact:?
+-- to_equal
+-- not_to_equal
+--
+-- nil:
+-- to_be_nil
+-- not_to_be_nil
+--
+-- boolean:
+-- to_be_true
+-- to_be_false
+--
+-- numbers:
+-- to_be_greater_than
+-- to_be_greater_than_or_equal
+-- to_be_less_than
+-- to_be_less_than_or_equal
+--
+-- strings:
+-- to_match
+-- not_to_match
+--
+-- tables:
+-- to_contain
+-- not_to_contain
