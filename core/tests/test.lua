@@ -196,6 +196,8 @@ end
 
 return Test
 
+-- TODO: implement more functionality
+--
 -- exact:
 -- not_to_be
 -- not_to_be_type
