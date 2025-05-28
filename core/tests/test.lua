@@ -13,6 +13,7 @@ Test.__index = Test
 -- INFO: new()
 function Test:new()
   local instance = setmetatable({}, Test)
+  ---@diagnostic disable-next-line: unused-local
   local logger = Logger:new()
   return instance
 end
