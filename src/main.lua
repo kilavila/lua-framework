@@ -4,8 +4,9 @@ local Factory = require("core.factory")
 -- core function Factory to create an application instance.
 
 ---@type fun(): nil
-local bootstrap = function()
+local function bootstrap()
   -- Creating a new instance of Factory, the core of the application
+  ---@type FactoryModule
   local app = Factory:new()
 
   -- The app has some default configurations.

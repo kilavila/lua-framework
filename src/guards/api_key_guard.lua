@@ -12,10 +12,14 @@ local env = require("src._environment")
 -- │                     │       │                     │       │                     │
 -- └─────────────────────┘       └─────────────────────┘       └─────────────────────┘
 --
---
 -- If the API key is valid, the request is allowed to proceed;
 -- otherwise, an appropriate error response is returned.
-local api_key_guard = function(func)
+
+---@type fun(): fun()
+---@param func fun(request: RequestData)
+local function api_key_guard(func)
+  ---@type fun()
+  ---@param request RequestData
   return function(request)
     local logger = Logger:new()
 
@@ -62,10 +66,11 @@ local api_key_guard = function(func)
     end
 
     -- If correct API key, continue handling the request
+    ---@type HttpResponse
     local result = func(request)
 
     -- Return the result of the request back to the
-    -- router and the HTTP utility
+    -- router and the HttpModule
     return result
   end
 end

@@ -1,13 +1,25 @@
 local render_routes_table = require("core.docs.render_routes_table")
 
+---@class DocsModule
+---@field new fun(self: DocsModule): DocsModule
+---@field render_template fun(self: DocsModule, filename: string, data: table): string|nil
+---@field serve_html fun(self: DocsModule, client: table): nil
+---@field serve_static_file fun(self: DocsModule, filename: string, client: table): nil
+---@field route_handler fun(self: DocsModule, client: table, method: string, controller: string, endpoint: string): boolean
 local Docs = {}
 Docs.__index = Docs
 
+---@type fun(): DocsModule
+---@param self DocsModule
 function Docs:new()
   local instance = setmetatable({}, Docs)
   return instance
 end
 
+---@type fun(): string|nil
+---@param self DocsModule
+---@param filename string
+---@param data table
 function Docs:render_template(filename, data)
   local file = io.open(filename, "r")
   if not file then
@@ -29,6 +41,9 @@ function Docs:render_template(filename, data)
   return content
 end
 
+---@type fun(): nil
+---@param self DocsModule
+---@param client table
 function Docs:serve_html(client)
   local data = {
     title = "Docs | Lua-Framework",
@@ -47,6 +62,10 @@ function Docs:serve_html(client)
   client:send(content)
 end
 
+---@type fun(): nil
+---@param self DocsModule
+---@param filename string
+---@param client table
 function Docs:serve_static_file(filename, client)
   local file = io.open(filename, "r")
   if not file then
@@ -64,6 +83,12 @@ function Docs:serve_static_file(filename, client)
   client:send(content)
 end
 
+---@type fun(): boolean
+---@param self DocsModule
+---@param client table
+---@param method string
+---@param controller string
+---@param endpoint string
 function Docs:route_handler(client, method, controller, endpoint)
   -- TODO: Create new Docs module for serving HTML, CSS, JS and static files
   --

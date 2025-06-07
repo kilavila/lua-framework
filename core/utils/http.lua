@@ -1,14 +1,18 @@
 local json = require("cjson")
 
--- TODO: Add exception filters?
+---@class HttpModule
+---@field new fun(self: HttpModule): HttpModule
 local Http = {}
 Http.__index = Http
 
+---@type fun(): HttpModule
+---@param self HttpModule
 function Http:new()
   local instance = setmetatable({}, Http)
   return instance
 end
 
+---@type table
 local responses = {
   -- Successful responses (200 – 299)
   ["200"] = "200 OK",
@@ -65,6 +69,8 @@ local responses = {
   ["510"] = "511 Network Authentication Required",
 }
 
+---@type fun(): nil
+---@param self HttpModule
 function Http:respond(client, response, origin_header)
   local status = responses[tostring(response.status)]
   local response_json = json.encode({

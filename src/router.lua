@@ -28,7 +28,21 @@ local api_key_guard = require("src.guards.api_key_guard")
 -- Similarly, the `entities` table contains definitions for various endpoints,
 -- allowing for organized management of the application's API structure.
 
----@type Routes
+---@class Docs
+---@field description? string
+---@field request? string[]
+---@field response? string[]
+
+---@class Entity
+---@field method string
+---@field fun fun()
+---@field docs? Docs
+
+---@class Controller
+---@field name string
+---@field entities table<{ [string]: Entity }>
+
+---@type table<{ [string]: Controller }>
 local Routes = {
   -- Route Definitions
   --

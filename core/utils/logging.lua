@@ -1,5 +1,5 @@
 ---@class LoggerModule
----@field new fun(): LoggerModule
+---@field new fun(self: LoggerModule): LoggerModule
 ---@field success fun(self: LoggerModule, message: string): nil
 ---@field info fun(self: LoggerModule, message: string): nil
 ---@field warn fun(self: LoggerModule, message: string): nil
@@ -7,7 +7,8 @@
 local Logger = {}
 Logger.__index = Logger
 
----@class new fun(): LoggerModule
+---@type fun(): LoggerModule
+---@param self LoggerModule
 function Logger:new()
   local instance = setmetatable({}, Logger)
   return instance
@@ -53,7 +54,7 @@ local format = function(type, color, message)
   return msg
 end
 
----@class fun(): nil
+---@type fun(): nil
 ---@param self LoggerModule
 ---@param message string
 function Logger:success(message)
@@ -61,7 +62,7 @@ function Logger:success(message)
   print(msg)
 end
 
----@class fun(): nil
+---@type fun(): nil
 ---@param self LoggerModule
 ---@param message string
 function Logger:info(message)
@@ -69,7 +70,7 @@ function Logger:info(message)
   print(msg)
 end
 
----@class fun(): nil
+---@type fun(): nil
 ---@param self LoggerModule
 ---@param message string
 function Logger:warn(message)
@@ -77,7 +78,7 @@ function Logger:warn(message)
   print(msg)
 end
 
----@class fun(): nil
+---@type fun(): nil
 ---@param self LoggerModule
 ---@param message string
 function Logger:error(message)

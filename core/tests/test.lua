@@ -1,6 +1,21 @@
 local Logger = require("core.utils.logging")
 
--- INFO: Test
+---@class CurrentTest
+---@field time? { start?: number, end?: number }
+---@field title? string
+---@field result? fun(): any
+---@field passed? boolean
+---@field tests? table
+
+---@class TestModule
+---@field current? CurrentTest
+---@field failed number
+---@field passed number
+---@field total number
+---@field time number
+---@field logger LoggerModule
+---@field new fun(self: TestModule): TestModule
+---@field check_tables fun(self: TestModule, result: table, expected: table): boolean
 local Test = {
   current = {},
   failed = 0,
@@ -10,15 +25,15 @@ local Test = {
 }
 Test.__index = Test
 
--- INFO: new()
+---@type fun(): TestModule
+---@param self TestModule
 function Test:new()
   local instance = setmetatable({}, Test)
-  ---@diagnostic disable-next-line: unused-local
-  local logger = Logger:new()
+  instance.logger = Logger:new()
   return instance
 end
 
--- INFO: colors
+---@type table
 local colors = {
   reset = "\27[0m",
   red = "\27[31m",
@@ -31,7 +46,10 @@ local colors = {
   gray = "\27[30m",
 }
 
--- INFO: check_tables()
+---@type fun(): boolean
+---@param self TestModule
+---@param result table
+---@param expected table
 function Test:check_tables(result, expected)
   local tables_are_identical = true
 

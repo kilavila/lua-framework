@@ -4,7 +4,7 @@ local Logger = require("core.utils.logging")
 local Routes = require("src.router")
 
 ---@type fun(): nil
-local print_ascii_art = function()
+local function print_ascii_art()
   local ascii = "\r\n"
     .. "\r\n"
     .. "                      ---  --   --  --        -------      \r\n"
@@ -44,7 +44,7 @@ end
 ---@field configuration FactoryConfiguration
 ---@field logger LoggerModule
 ---@field factory_router FactoryRouterModule
----@field new fun(): FactoryModule
+---@field new fun(self: FactoryModule): FactoryModule
 ---@field config fun(self: FactoryModule, config?: table): nil
 ---@field listen fun(self: FactoryModule): nil
 local Factory = {
@@ -62,7 +62,8 @@ local Factory = {
 }
 Factory.__index = Factory
 
----@class new fun(): FactoryModule
+---@type fun(): FactoryModule
+---@param self FactoryModule
 function Factory:new()
   local instance = setmetatable({}, Factory)
   instance.logger = Logger:new()
@@ -70,7 +71,7 @@ function Factory:new()
   return instance
 end
 
----@class FactoryConfig fun(): nil
+---@type fun(): nil
 ---@param self FactoryModule
 ---@param config? table
 function Factory:config(config)
@@ -81,7 +82,7 @@ function Factory:config(config)
   end
 end
 
----@class FactoryListen fun(): nil
+---@type fun(): nil
 ---@param self FactoryModule
 function Factory:listen()
   local server = socket.bind("*", self.configuration.port)
@@ -110,7 +111,6 @@ function Factory:listen()
 
       local request = client:receive("*l")
       if request then
-        ---@type handle_request
         self.factory_router:handle_request(client, request, Routes, self.configuration)
       end
 

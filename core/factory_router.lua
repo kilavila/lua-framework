@@ -9,12 +9,13 @@ local Docs = require("core.docs.render_template")
 ---@field http HttpModule
 ---@field logger LoggerModule
 ---@field docs DocsModule
----@field new fun(): FactoryRouterModule
+---@field new fun(self: FactoryRouterModule): FactoryRouterModule
 ---@field handle_request fun(self: FactoryRouterModule, client: table, request: table, routes: table, configuration: table): nil
 local FactoryRouter = {}
 FactoryRouter.__index = FactoryRouter
 
----@class new fun(): FactoryRouterModule
+---@type fun(): FactoryRouterModule
+---@param self FactoryRouterModule
 function FactoryRouter:new()
   local instance = setmetatable({}, FactoryRouter)
   instance.request_handler = RequestHandler:new()
@@ -24,7 +25,7 @@ function FactoryRouter:new()
   return instance
 end
 
----@class handle_request fun(): nil
+---@type fun(): nil
 ---@param self FactoryRouterModule
 ---@param client table
 ---@param request table
@@ -46,7 +47,15 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
     return
   end
 
-  ---@type HttpResponse|nil
+  ---@class ErrorResponse
+  ---@field message string
+
+  ---@class HttpResponse
+  ---@field status number
+  ---@field errors? ErrorResponse[]
+  ---@field data? table<any>
+
+  ---@type HttpResponse
   local response = {
     status = 404,
     errors = {
@@ -69,9 +78,7 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
     return
   end
 
-  response = nil
   response = entity.fun(parsed_request.req)
-
   if response then
     self.http:respond(client, response, parsed_request.origin_header)
   else

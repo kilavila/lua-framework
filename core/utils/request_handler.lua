@@ -1,9 +1,16 @@
 local RequestExtractor = require("core.utils.request_extractor")
 local Cors = require("core.utils.cors")
 
+---@class RequestHandlerModule
+---@field cors CorsModule
+---@field request_extractor RequestExtractorModule
+---@field new fun(self: RequestHandlerModule): RequestHandlerModule
+---@field parse fun(self: RequestHandlerModule, client: table, request: table, configuration: table): nil
 local RequestHandler = {}
 RequestHandler.__index = RequestHandler
 
+---@type fun(): RequestHandlerModule
+---@param self RequestHandlerModule
 function RequestHandler:new()
   local instance = setmetatable({}, RequestHandler)
   instance.cors = Cors:new()
@@ -11,6 +18,11 @@ function RequestHandler:new()
   return instance
 end
 
+---@type fun(): table|nil
+---@param self RequestHandlerModule
+---@param client table
+---@param request table
+---@param configuration table
 function RequestHandler:parse(client, request, configuration)
   local method, url = request:match("^(%S+) (%S+)")
   local headers = self.request_extractor:headers(client)
@@ -57,8 +69,14 @@ function RequestHandler:parse(client, request, configuration)
     body = self.request_extractor:body(client, headers["content-length"])
   end
 
-  ---@type HttpRequest
-  local req = {
+  ---@class RequestData
+  ---@field body table|nil
+  ---@field headers table
+  ---@field method string
+  ---@field origin string
+  ---@field params table|nil
+  ---@field route string
+  local req_data = {
     body = body,
     headers = headers,
     method = method,
@@ -67,13 +85,20 @@ function RequestHandler:parse(client, request, configuration)
     route = route,
   }
 
-  return {
+  ---@class HttpRequest
+  ---@field controller string
+  ---@field endpoint string
+  ---@field method string
+  ---@field origin_header string|nil
+  ---@field req RequestData
+  local req = {
     controller = controller,
     endpoint = endpoint,
     method = method,
     origin_header = origin_header,
-    req = req,
+    req = req_data,
   }
+  return req
 end
 
 return RequestHandler

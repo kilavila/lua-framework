@@ -1,9 +1,17 @@
+---@class CorsModule
+---@field allow_all_origins boolean
+---@field allowed_origins table
+---@field new fun(self: CorsModule): CorsModule
+---@field get_origin_header fun(self: CorsModule, origin: string): string|nil
+---@field preflight fun(self: CorsModule, client: table, method: string,  origin: string): nil
 local Cors = {
   allow_all_origins = false,
   allowed_origins = {},
 }
 Cors.__index = Cors
 
+---@type fun(): CorsModule
+---@param self CorsModule
 function Cors:new()
   local instance = setmetatable({}, Cors)
   return instance
@@ -19,8 +27,9 @@ function Cors:enable(allowed_origins)
   end
 end
 
----@type fun(): any
----@param origin any
+---@type fun(): string|nil
+---@param self CorsModule
+---@param origin string
 function Cors:get_origin_header(origin)
   -- TODO: Fix same-origin
   if self.allow_all_origins then
@@ -36,9 +45,10 @@ function Cors:get_origin_header(origin)
 end
 
 ---@type fun(): nil
+---@param self CorsModule
 ---@param client table
 ---@param method string
----@param origin any
+---@param origin string
 function Cors:preflight(client, method, origin)
   if method == "OPTIONS" then
     local origin_header = self:get_origin_header(origin)

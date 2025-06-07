@@ -8,6 +8,8 @@
 -- will be converted to bytecode, which helps protect sensitive information
 -- from being easily readable. However, ensure that this file is not
 -- included in public repositories to maintain security.
+
+---@type table
 local environment = {
   -- jwt_secret = "some_secret_key",
   api_key = "my_secret_key",

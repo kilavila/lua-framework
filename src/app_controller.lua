@@ -24,6 +24,7 @@ function AppController.status(request)
   -- and return the current status of the application.
 
   -- Creating a new instance of the logger
+  ---@type LoggerModule
   local logger = Logger:new()
 
   for k, v in pairs(request) do
@@ -46,6 +47,7 @@ function AppController.status(request)
   end
 
   -- Call the AppService status function
+  ---@type HttpResponse
   local response = AppService.status()
   return response
 end
