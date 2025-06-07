@@ -1,14 +1,14 @@
 local Logger = require("core.utils.logging")
 
 ---@class CurrentTest
----@field time? { start?: number, end?: number }
----@field title? string
----@field result? fun(): any
----@field passed? boolean
----@field tests? table
+---@field time { start: number|nil, stop: number|nil }
+---@field title string|nil
+---@field result any
+---@field passed boolean|nil
+---@field tests table|nil
 
 ---@class TestModule
----@field current? CurrentTest
+---@field current CurrentTest
 ---@field failed number
 ---@field passed number
 ---@field total number
@@ -17,7 +17,16 @@ local Logger = require("core.utils.logging")
 ---@field new fun(self: TestModule): TestModule
 ---@field check_tables fun(self: TestModule, result: table, expected: table): boolean
 local Test = {
-  current = {},
+  current = {
+    time = {
+      start = nil,
+      stop = nil,
+    },
+    title = nil,
+    result = nil,
+    passed = nil,
+    tests = nil,
+  },
   failed = 0,
   passed = 0,
   total = 0,
@@ -48,7 +57,7 @@ local colors = {
 
 ---@type fun(): boolean
 ---@param self TestModule
----@param result table
+---@param result any
 ---@param expected table
 function Test:check_tables(result, expected)
   local tables_are_identical = true
