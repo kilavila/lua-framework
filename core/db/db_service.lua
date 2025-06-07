@@ -42,7 +42,7 @@ end
 
 function DatabaseService:select_from(row)
   if not row then
-    self.logger:error("[DatabaseService] :select_from(row) expected a row name")
+    self.logger:error("[DatabaseService] :select_from(row) expected a row name")
     return nil
   end
 

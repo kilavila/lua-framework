@@ -3,6 +3,7 @@ local FactoryRouter = require("core.factory_router")
 local Logger = require("core.utils.logging")
 local Routes = require("src.router")
 
+---@type fun(): nil
 local print_ascii_art = function()
   local ascii = "\r\n"
     .. "\r\n"
@@ -39,7 +40,19 @@ local print_ascii_art = function()
   print("\27[34m" .. ascii .. "\27[0m")
 end
 
+---@class FactoryModule
+---@field configuration FactoryConfiguration
+---@field logger LoggerModule
+---@field factory_router FactoryRouterModule
+---@field new fun(): FactoryModule
+---@field config fun(self: FactoryModule, config?: table): nil
+---@field listen fun(self: FactoryModule): nil
 local Factory = {
+  ---@class FactoryConfiguration
+  ---@field enable_cors? boolean
+  ---@field allowed_origins? table|nil
+  ---@field port? number
+  ---@field ascii_art? boolean
   configuration = {
     enable_cors = false,
     allowed_origins = nil,
@@ -49,6 +62,7 @@ local Factory = {
 }
 Factory.__index = Factory
 
+---@class new fun(): FactoryModule
 function Factory:new()
   local instance = setmetatable({}, Factory)
   instance.logger = Logger:new()
@@ -56,7 +70,8 @@ function Factory:new()
   return instance
 end
 
----@type fun(): nil
+---@class FactoryConfig fun(): nil
+---@param self FactoryModule
 ---@param config? table
 function Factory:config(config)
   if config then
@@ -66,6 +81,8 @@ function Factory:config(config)
   end
 end
 
+---@class FactoryListen fun(): nil
+---@param self FactoryModule
 function Factory:listen()
   local server = socket.bind("*", self.configuration.port)
 
@@ -93,7 +110,7 @@ function Factory:listen()
 
       local request = client:receive("*l")
       if request then
-        -- TODO: Implement function decorator for timing functions?
+        ---@type handle_request
         self.factory_router:handle_request(client, request, Routes, self.configuration)
       end
 

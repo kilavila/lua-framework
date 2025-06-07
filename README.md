@@ -1,6 +1,6 @@
 # Lua-Framework (REST API)
 
-> [!WARNING]  
+> [!WARNING]
 > This project is currently under development. Features and functionality are
 > being actively worked on, and the API may change as improvements are made.
 > Please check back for updates, and feel free to contribute or provide feedback!
@@ -23,18 +23,18 @@ controllers. Perfect for making your API projects smooth and fun! 🎉
 ```
 /lua-framework
 │
-├── core/
+├── /core
 │   ├── factory.lua         # Application factory for configuration and initialization
 │   ├── factory-router.lua  # Application router for handling requests and responses
-│   ├── types/              # LuaCATS (Lua Comment And Type System) annotations
+│   ├── /types              # LuaCATS (Lua Comment And Type System) annotations
 │   │   └── ...
-│   └── utils/
+│   └── /utils
 │       ├── cors.lua        # Cors utility
 │       ├── http.lua        # Http response utility
 │       ├── logging.lua     # Logging utility
 │       └── ...
 │
-└── src/
+└── /src
     ├── app_controller.lua  # Controller for handling app-related endpoints
     ├── app_service.lua     # Service for handling data storage and retrieval
     ├── main.lua            # Entry point of the application
@@ -187,7 +187,7 @@ Content-Type: application/json
 [ OK ] - 08/05/2025, 21:50:22 - [Core] Listening on port: 3000
 
 [ OK ] - 08/05/2025, 21:50:22 - [Router] app_controller {/app}:
-[ OK ] - 08/05/2025, 21:50:22 - [Router] Mapped {/status, GET}
+[ OK ] - 08/05/2025, 21:50:22 - [Router] Mapped {/status, GET}
 
 [ INFO ] - 08/05/2025, 21:50:35 - [Request] GET /app/status HTTP/1.1
 [ INFO ] - 08/05/2025, 21:50:35 - [app_controller] params: table: 0x5c670bce7fa0

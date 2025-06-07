@@ -4,9 +4,17 @@ local Logger = require("core.utils.logging")
 
 local Docs = require("core.docs.render_template")
 
+---@class FactoryRouterModule
+---@field request_handler RequestHandlerModule
+---@field http HttpModule
+---@field logger LoggerModule
+---@field docs DocsModule
+---@field new fun(): FactoryRouterModule
+---@field handle_request fun(self: FactoryRouterModule, client: table, request: table, routes: table, configuration: table): nil
 local FactoryRouter = {}
 FactoryRouter.__index = FactoryRouter
 
+---@class new fun(): FactoryRouterModule
 function FactoryRouter:new()
   local instance = setmetatable({}, FactoryRouter)
   instance.request_handler = RequestHandler:new()
@@ -16,7 +24,8 @@ function FactoryRouter:new()
   return instance
 end
 
----@type fun(): nil
+---@class handle_request fun(): nil
+---@param self FactoryRouterModule
 ---@param client table
 ---@param request table
 ---@param routes table

@@ -13,22 +13,22 @@ local bootstrap = function()
   -- but if you want to use a custom configuration
   -- you can pass in a table like so:
 
-  -- TODO: Fix types
-  -- TODO: Encryption and hashing
-  -- TODO: User defined types in src/
-  --
-  -- TODO: Rate limiting?
-  -- TODO: Websockets?
-  -- TODO: Add caching?
-  -- TODO: Serialization?
-  -- TODO: Cron jobs?
-  -- TODO: ORM similar to prisma?
+  -- TODO:
+  -- Fix types
+  -- Encryption and hashing
+  -- User defined types in src/
+  -- Rate limiting?
+  -- Websockets?
+  -- Add caching?
+  -- Serialization?
+  -- Cron jobs?
+  -- ORM similar to prisma?
   -- Add database config for SQL and NoSQL?
   -- Multiple databases?
-  -- TODO: Header or URI versioning?
+  -- Header or URI versioning?
   -- Controller specific or endpoint or both and global default?
 
-  ---@type Configuration
+  ---@type FactoryConfiguration
   local config = {
     -- Define the allowed origins
     -- You don't have to use both allowed_origins and enable_cors.
