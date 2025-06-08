@@ -1,18 +1,18 @@
 local json = require("cjson")
 
+---| Module for handling Http responses
 ---@class HttpModule
----@field new fun(self: HttpModule): HttpModule
----@field respond fun(self: HttpModule, client: table, response: HttpResponse, origin_header: string): nil
+---@field new fun(self: HttpModule): HttpModule ---| Creates new instance of HttpModule
+---@field respond fun(self: HttpModule, client: table, response: HttpResponse, origin_header: string): nil ---| Send Http response
 local Http = {}
 Http.__index = Http
 
----@type fun(): HttpModule
----@param self HttpModule
 function Http:new()
   local instance = setmetatable({}, Http)
   return instance
 end
 
+---| Table of all available Http response status codes.
 ---@type table
 local responses = {
   -- Successful responses (200 – 299)
@@ -70,11 +70,6 @@ local responses = {
   ["510"] = "511 Network Authentication Required",
 }
 
----@type fun(): nil
----@param self HttpModule
----@param client table
----@param response HttpResponse
----@param origin_header string
 function Http:respond(client, response, origin_header)
   local status = responses[tostring(response.status)]
   local response_json = json.encode({

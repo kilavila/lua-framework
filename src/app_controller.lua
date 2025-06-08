@@ -1,6 +1,8 @@
 local Logger = require("core.utils.logging")
 local AppService = require("src.app_service")
 
+--- AppController class defined in 'src.types.types'
+---@class AppController
 local AppController = {}
 
 ---@type fun(): HttpResponse
@@ -55,6 +57,14 @@ end
 function AppController.test(request)
   -- Example using a guard.
   -- See `src.router` and `src.guards.api_key_guard`
+
+  ---@type LoggerModule
+  local logger = Logger:new()
+
+  for k, v in pairs(request) do
+    local str = string.format("[AppController.status] %s: %s", k, v)
+    logger:info(str)
+  end
 
   ---@type HttpResponse
   local response = {

@@ -15,9 +15,7 @@ local function bootstrap()
   -- you can pass in a table like so:
 
   -- TODO:
-  -- Fix types
   -- Encryption and hashing
-  -- User defined types in src/
   -- Rate limiting?
   -- Websockets?
   -- Add caching?
@@ -53,10 +51,9 @@ local function bootstrap()
     enable_cors = true,
     port = 3000,
   }
-  app:config(config)
 
-  -- Start listening for requests
-  app:listen()
+  app:config(config) -- Override the default config
+  app:listen() -- Start listening for requests
 end
 
 bootstrap()

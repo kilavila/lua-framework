@@ -9,15 +9,16 @@ local Logger = require("core.utils.logging")
 -- get linked rows by f.ex id
 -- TEST: Test all functions and create example in src -> app service
 
+---| Module for working with SQLite: Object–relational mapping(ORM).
 ---@class DbServiceModule
----@field database_url string
+---@field database_url string ---| Path to '.db' file.
 ---@field current { row: string|nil, values: string|nil }
 ---@field db any
 ---@field logger LoggerModule
----@field new fun(self: DbServiceModule): DbServiceModule
----@field new_model fun(self: DbServiceModule, sql_string: string): boolean
----@field select_row fun(self: DbServiceModule, row: string): DbServiceModule|nil
----@field where_values fun(self: DbServiceModule, values: string): table
+---@field new fun(self: DbServiceModule): DbServiceModule ---| Creates new instance of DbServiceModule
+---@field new_model fun(self: DbServiceModule, sql_string: string): boolean ---| Create new database model.
+---@field select_from fun(self: DbServiceModule, row: string): DbServiceModule|nil ---| Select which database row to get data from(run this before ':where_values()').
+---@field where_values fun(self: DbServiceModule, values: string): table ---| Select which values to get from the row(run this after ':select_from()').
 local DatabaseService = {
   database_url = "./dev.db",
   current = {
@@ -27,8 +28,6 @@ local DatabaseService = {
 }
 DatabaseService.__index = DatabaseService
 
----@type fun(): DbServiceModule
----@param self DbServiceModule
 function DatabaseService:new()
   local instance = setmetatable({}, DatabaseService)
   ---@diagnostic disable-next-line: unused-local
@@ -38,9 +37,6 @@ function DatabaseService:new()
   return instance
 end
 
----@type fun(): boolean
----@param self DbServiceModule
----@param sql_string string
 function DatabaseService:new_model(sql_string)
   self.db:exec("BEGIN TRANSACTION;")
 
@@ -55,9 +51,6 @@ function DatabaseService:new_model(sql_string)
   end
 end
 
----@type fun(): DbServiceModule|nil
----@param self DbServiceModule
----@param row string
 function DatabaseService:select_from(row)
   if not row then
     self.logger:error("[DatabaseService] :select_from(row) expected a row name")
@@ -68,9 +61,6 @@ function DatabaseService:select_from(row)
   return self
 end
 
----@type fun(): table
----@param self DbServiceModule
----@param values string
 function DatabaseService:where_values(values)
   local stmt = self.db:prepare("SELECT * FROM " .. DatabaseService.current.row .. " WHERE ?")
   stmt:bind_values(values)

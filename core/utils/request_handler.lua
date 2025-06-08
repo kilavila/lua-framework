@@ -1,16 +1,16 @@
 local RequestExtractor = require("core.utils.request_extractor")
 local Cors = require("core.utils.cors")
 
+---| Module for parsing the incoming request.
+---| Returns table with data required for the application router and the request data.
 ---@class RequestHandlerModule
 ---@field cors CorsModule
 ---@field request_extractor RequestExtractorModule
----@field new fun(self: RequestHandlerModule): RequestHandlerModule
----@field parse fun(self: RequestHandlerModule, client: table, request: table, configuration: table): nil
+---@field new fun(self: RequestHandlerModule): RequestHandlerModule ---| Creates new instance of RequestExtractorModule
+---@field parse fun(self: RequestHandlerModule, client: table, request: table, configuration: table): nil ---| Parsing the incoming request.
 local RequestHandler = {}
 RequestHandler.__index = RequestHandler
 
----@type fun(): RequestHandlerModule
----@param self RequestHandlerModule
 function RequestHandler:new()
   local instance = setmetatable({}, RequestHandler)
   instance.cors = Cors:new()
@@ -18,11 +18,6 @@ function RequestHandler:new()
   return instance
 end
 
----@type fun(): table|nil
----@param self RequestHandlerModule
----@param client table
----@param request table
----@param configuration table
 function RequestHandler:parse(client, request, configuration)
   local method, url = request:match("^(%S+) (%S+)")
   local headers = self.request_extractor:headers(client)

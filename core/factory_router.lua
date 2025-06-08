@@ -4,18 +4,17 @@ local Logger = require("core.utils.logging")
 
 local Docs = require("core.docs.render_template")
 
+---| Routing module for the application
 ---@class FactoryRouterModule
 ---@field request_handler RequestHandlerModule
 ---@field http HttpModule
 ---@field logger LoggerModule
 ---@field docs DocsModule
----@field new fun(self: FactoryRouterModule): FactoryRouterModule
----@field handle_request fun(self: FactoryRouterModule, client: table, request: table, routes: table, configuration: table): nil
+---@field new fun(self: FactoryRouterModule): FactoryRouterModule ---| Creates new instance of FactoryRouterModule
+---@field handle_request fun(self: FactoryRouterModule, client: table, request: table, routes: table, configuration: table): nil ---| Handles routing for incoming requests
 local FactoryRouter = {}
 FactoryRouter.__index = FactoryRouter
 
----@type fun(): FactoryRouterModule
----@param self FactoryRouterModule
 function FactoryRouter:new()
   local instance = setmetatable({}, FactoryRouter)
   instance.request_handler = RequestHandler:new()
@@ -25,12 +24,6 @@ function FactoryRouter:new()
   return instance
 end
 
----@type fun(): nil
----@param self FactoryRouterModule
----@param client table
----@param request table
----@param routes table
----@param configuration table
 function FactoryRouter:handle_request(client, request, routes, configuration)
   print("")
   self.logger:info("[Request] " .. request)
@@ -47,9 +40,12 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
     return
   end
 
+  ---| Array of tables containing error messages.
   ---@class ErrorResponse
   ---@field message string
 
+  ---| Lua table to return as response.
+  ---| Will be parsed to JSON data by HttpModule.
   ---@class HttpResponse
   ---@field status number
   ---@field errors? ErrorResponse[]

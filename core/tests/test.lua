@@ -1,26 +1,28 @@
 local Logger = require("core.utils.logging")
 
+---| Values for the current test.
 ---@class CurrentTest
----@field time { start: number|nil, stop: number|nil }
----@field title string|nil
----@field result any
----@field passed boolean|nil
----@field tests table|nil
+---@field time { start: number|nil, stop: number|nil } ---| Start and stop time for current test.
+---@field title string|nil ---| Title of current test.
+---@field result any ---| The result of the provided function.
+---@field passed boolean|nil ---| If the test passed or failed.
+---@field tests table|nil ---| Table of all the tests for the given function.
 
+---| Module for unit testing.
 ---@class TestModule
 ---@field current CurrentTest
----@field failed number
----@field passed number
----@field total number
----@field time number
+---@field failed number ---| Number of failed tests.
+---@field passed number ---| Number of passed tests.
+---@field total number ---| Total number of tests.
+---@field time number ---| Total time spent running tests.
 ---@field logger LoggerModule
----@field new fun(self: TestModule): TestModule
----@field check_tables fun(self: TestModule, result: table, expected: table): boolean
----@field expect fun(self: TestModule, title: string, func: fun(): any): TestModule
----@field to_be fun(self: TestModule, result: any): TestModule
----@field to_be_type fun(self: TestModule, expected_type: string): TestModule
----@field log fun(self: TestModule): nil
----@field summary fun(self: TestModule): nil
+---@field new fun(self: TestModule): TestModule ---| Creates new instance of TestModule.
+---@field check_tables fun(self: TestModule, result: table, expected: table): boolean ---| Checking if tables are identical.
+---@field expect fun(self: TestModule, title: string, func: any): TestModule ---| Creates new test.
+---@field to_be fun(self: TestModule, result: any): TestModule ---| Expect result of function to match provided result.
+---@field to_be_type fun(self: TestModule, expected_type: string): TestModule ---| Expect result of function to match provided type.
+---@field log fun(self: TestModule): nil ---| Logging test result to console.
+---@field summary fun(self: TestModule): nil ---| Logging summary of all test.
 local Test = {
   current = {
     time = {
@@ -39,14 +41,13 @@ local Test = {
 }
 Test.__index = Test
 
----@type fun(): TestModule
----@param self TestModule
 function Test:new()
   local instance = setmetatable({}, Test)
   instance.logger = Logger:new()
   return instance
 end
 
+---| Table of all available colors for logging.
 ---@type table
 local colors = {
   reset = "\27[0m",
@@ -60,10 +61,6 @@ local colors = {
   gray = "\27[30m",
 }
 
----@type fun(): boolean
----@param self TestModule
----@param result any
----@param expected table
 function Test:check_tables(result, expected)
   local tables_are_identical = true
 
@@ -83,10 +80,6 @@ function Test:check_tables(result, expected)
   return tables_are_identical
 end
 
----@type fun(): TestModule
----@param self TestModule
----@param title string
----@param func fun(): any
 function Test:expect(title, func)
   self.current.time = {}
   self.current.time.start = os.clock()
@@ -97,9 +90,6 @@ function Test:expect(title, func)
   return self
 end
 
----@type fun(): TestModule
----@param self TestModule
----@param result any
 function Test:to_be(result)
   if not result then
     self.logger:error("Function 'to_be()' expects a parameter")
@@ -137,9 +127,6 @@ function Test:to_be(result)
   return self
 end
 
----@type fun(): TestModule
----@param self TestModule
----@param expected_type string
 function Test:to_be_type(expected_type)
   if not expected_type then
     self.logger:error("Function 'to_be_type()' expects a parameter")
@@ -168,8 +155,6 @@ function Test:to_be_type(expected_type)
   return self
 end
 
----@type fun(): nil
----@param self TestModule
 function Test:log()
   local overall_status = colors.green .. "PASS" .. colors.reset
 
@@ -209,8 +194,6 @@ function Test:log()
   end
 end
 
----@type fun(): nil
----@param self TestModule
 function Test:summary()
   local summary = string.format("[ %sSUMMARY%s ]", colors.blue, colors.reset)
   local passed = string.format("%s𜱺 %s passed%s", colors.green, self.passed, colors.reset)

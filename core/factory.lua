@@ -3,6 +3,7 @@ local FactoryRouter = require("core.factory_router")
 local Logger = require("core.utils.logging")
 local Routes = require("src.router")
 
+---| Print ascii art on application start
 ---@type fun(): nil
 local function print_ascii_art()
   local ascii = "\r\n"
@@ -40,20 +41,30 @@ local function print_ascii_art()
   print("\27[34m" .. ascii .. "\27[0m")
 end
 
----@class FactoryConfiguration
----@field enable_cors? boolean
----@field allowed_origins? table|nil
----@field port? number
----@field ascii_art? boolean
-
+---| The core module of the application.
+---| Handles configuration and listens for requests.
 ---@class FactoryModule
 ---@field configuration FactoryConfiguration
 ---@field logger LoggerModule
 ---@field factory_router FactoryRouterModule
----@field new fun(self: FactoryModule): FactoryModule
----@field config fun(self: FactoryModule, config?: FactoryConfiguration): nil
----@field listen fun(self: FactoryModule): nil
+---@field new fun(self: FactoryModule): FactoryModule ---| Creates new instance of FactoryModule
+---@field config fun(self: FactoryModule, config?: FactoryConfiguration): nil ---| Overrides default configuration
+---@field listen fun(self: FactoryModule): nil ---| Tells the application to listen on specified port
 local Factory = {
+  ---| Config table for the application.
+  ---| Default config:
+  ---|
+  ---|  {
+  ---|    enable_cors = false,
+  ---|    allowed_origins = nil,
+  ---|    port = 5000,
+  ---|    ascii_art = true,
+  ---|  }
+  ---@class FactoryConfiguration
+  ---@field enable_cors? boolean
+  ---@field allowed_origins? table|nil
+  ---@field port? number
+  ---@field ascii_art? boolean
   configuration = {
     enable_cors = false,
     allowed_origins = nil,
@@ -63,8 +74,6 @@ local Factory = {
 }
 Factory.__index = Factory
 
----@type fun(): FactoryModule
----@param self FactoryModule
 function Factory:new()
   local instance = setmetatable({}, Factory)
   instance.logger = Logger:new()
@@ -72,9 +81,6 @@ function Factory:new()
   return instance
 end
 
----@type fun(): nil
----@param self FactoryModule
----@param config? FactoryConfiguration
 function Factory:config(config)
   if config then
     for key, value in pairs(config) do
@@ -83,8 +89,6 @@ function Factory:config(config)
   end
 end
 
----@type fun(): nil
----@param self FactoryModule
 function Factory:listen()
   local server = socket.bind("*", self.configuration.port)
 

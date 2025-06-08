@@ -1,24 +1,26 @@
+---| Module for Cross-Origin Resource Sharing
+---| Mechanism that allows a server to indicate any origins (domain, scheme, or port)
+---| other than its own from which a browser should permit loading resources.
+---|
+---| Read more: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
 ---@class CorsModule
 ---@field allow_all_origins boolean
 ---@field allowed_origins table
----@field new fun(self: CorsModule): CorsModule
----@field get_origin_header fun(self: CorsModule, origin: string): string|nil
----@field preflight fun(self: CorsModule, client: table, method: string,  origin: string): nil
+---@field new fun(self: CorsModule): CorsModule ---| Creates new instance of CorsModule
+---@field enable fun(self: CorsModule, allowed_origins?: string[]): nil ---| Sets the table of allowed origins if table is provided, or sets allow all if no table.
+---@field get_origin_header fun(self: CorsModule, origin: string): string|nil ---| Checks if a request origin is allowed.
+---@field preflight fun(self: CorsModule, client: table, method: string,  origin: string): nil ---| Preflight check
 local Cors = {
   allow_all_origins = false,
   allowed_origins = {},
 }
 Cors.__index = Cors
 
----@type fun(): CorsModule
----@param self CorsModule
 function Cors:new()
   local instance = setmetatable({}, Cors)
   return instance
 end
 
----@type fun(): nil
----@param allowed_origins? table<string>
 function Cors:enable(allowed_origins)
   if allowed_origins then
     self.allowed_origins = allowed_origins
@@ -27,9 +29,6 @@ function Cors:enable(allowed_origins)
   end
 end
 
----@type fun(): string|nil
----@param self CorsModule
----@param origin string
 function Cors:get_origin_header(origin)
   -- TODO: Fix same-origin
   if self.allow_all_origins then
@@ -44,11 +43,6 @@ function Cors:get_origin_header(origin)
   end
 end
 
----@type fun(): nil
----@param self CorsModule
----@param client table
----@param method string
----@param origin string
 function Cors:preflight(client, method, origin)
   if method == "OPTIONS" then
     local origin_header = self:get_origin_header(origin)

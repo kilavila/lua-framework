@@ -1,25 +1,20 @@
 local render_routes_table = require("core.docs.render_routes_table")
 
+---| Module for API documentation: '/docs'.
 ---@class DocsModule
----@field new fun(self: DocsModule): DocsModule
----@field render_template fun(self: DocsModule, filename: string, data: table): string|nil
----@field serve_html fun(self: DocsModule, client: table): nil
----@field serve_static_file fun(self: DocsModule, filename: string, client: table): nil
----@field route_handler fun(self: DocsModule, client: table, method: string, controller: string, endpoint: string): boolean
+---@field new fun(self: DocsModule): DocsModule ---| Creates new instance of DocsModule.
+---@field render_template fun(self: DocsModule, filename: string, data: table): string|nil ---| Replacing 'variables' in HTML with data from defined routes in 'src.router'.
+---@field serve_html fun(self: DocsModule, client: table): nil ---| Http response with HTML template.
+---@field serve_static_file fun(self: DocsModule, filename: string, client: table): nil ---| Http response with static files: '.css', '.ico' etc.
+---@field route_handler fun(self: DocsModule, client: table, method: string, controller: string, endpoint: string): boolean ---| Handles routes for '/docs' endpoint.
 local Docs = {}
 Docs.__index = Docs
 
----@type fun(): DocsModule
----@param self DocsModule
 function Docs:new()
   local instance = setmetatable({}, Docs)
   return instance
 end
 
----@type fun(): string|nil
----@param self DocsModule
----@param filename string
----@param data table
 function Docs:render_template(filename, data)
   local file = io.open(filename, "r")
   if not file then
@@ -41,9 +36,6 @@ function Docs:render_template(filename, data)
   return content
 end
 
----@type fun(): nil
----@param self DocsModule
----@param client table
 function Docs:serve_html(client)
   local data = {
     title = "Docs | Lua-Framework",
@@ -62,10 +54,6 @@ function Docs:serve_html(client)
   client:send(content)
 end
 
----@type fun(): nil
----@param self DocsModule
----@param filename string
----@param client table
 function Docs:serve_static_file(filename, client)
   local file = io.open(filename, "r")
   if not file then
@@ -83,12 +71,6 @@ function Docs:serve_static_file(filename, client)
   client:send(content)
 end
 
----@type fun(): boolean
----@param self DocsModule
----@param client table
----@param method string
----@param controller string
----@param endpoint string
 function Docs:route_handler(client, method, controller, endpoint)
   -- TODO: Create new Docs module for serving HTML, CSS, JS and static files
   --
@@ -102,6 +84,8 @@ function Docs:route_handler(client, method, controller, endpoint)
     self:serve_static_file("core/docs/styles.css", client)
     return true
   end
+
+  return false
 end
 
 return Docs

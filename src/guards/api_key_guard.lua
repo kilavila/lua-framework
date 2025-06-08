@@ -21,7 +21,12 @@ local function api_key_guard(func)
   ---@type fun()
   ---@param request RequestData
   return function(request)
+    ---@type LoggerModule
     local logger = Logger:new()
+
+    -- The API Key from the request
+    ---@type string|nil
+    local key = request.headers["x-api-key"]
 
     -- Check if environment api_key exist
     if not env.api_key then
@@ -40,7 +45,7 @@ local function api_key_guard(func)
     end
 
     -- If no API key
-    if not request.headers["x-api-key"] then
+    if not key then
       ---@type HttpResponse
       local response = {
         status = 401,
@@ -53,7 +58,7 @@ local function api_key_guard(func)
     end
 
     -- If wrong API key
-    if request.headers["x-api-key"] ~= env.api_key then
+    if key ~= env.api_key then
       ---@type HttpResponse
       local response = {
         status = 401,
