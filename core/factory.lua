@@ -40,19 +40,20 @@ local function print_ascii_art()
   print("\27[34m" .. ascii .. "\27[0m")
 end
 
+---@class FactoryConfiguration
+---@field enable_cors? boolean
+---@field allowed_origins? table|nil
+---@field port? number
+---@field ascii_art? boolean
+
 ---@class FactoryModule
 ---@field configuration FactoryConfiguration
 ---@field logger LoggerModule
 ---@field factory_router FactoryRouterModule
 ---@field new fun(self: FactoryModule): FactoryModule
----@field config fun(self: FactoryModule, config?: table): nil
+---@field config fun(self: FactoryModule, config?: FactoryConfiguration): nil
 ---@field listen fun(self: FactoryModule): nil
 local Factory = {
-  ---@class FactoryConfiguration
-  ---@field enable_cors? boolean
-  ---@field allowed_origins? table|nil
-  ---@field port? number
-  ---@field ascii_art? boolean
   configuration = {
     enable_cors = false,
     allowed_origins = nil,
@@ -73,7 +74,7 @@ end
 
 ---@type fun(): nil
 ---@param self FactoryModule
----@param config? table
+---@param config? FactoryConfiguration
 function Factory:config(config)
   if config then
     for key, value in pairs(config) do

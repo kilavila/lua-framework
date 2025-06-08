@@ -8,6 +8,16 @@ local Logger = require("core.utils.logging")
 -- insert many
 -- get linked rows by f.ex id
 -- TEST: Test all functions and create example in src -> app service
+
+---@class DbServiceModule
+---@field database_url string
+---@field current { row: string|nil, values: string|nil }
+---@field db any
+---@field logger LoggerModule
+---@field new fun(self: DbServiceModule): DbServiceModule
+---@field new_model fun(self: DbServiceModule, sql_string: string): boolean
+---@field select_row fun(self: DbServiceModule, row: string): DbServiceModule|nil
+---@field where_values fun(self: DbServiceModule, values: string): table
 local DatabaseService = {
   database_url = "./dev.db",
   current = {
@@ -17,15 +27,20 @@ local DatabaseService = {
 }
 DatabaseService.__index = DatabaseService
 
+---@type fun(): DbServiceModule
+---@param self DbServiceModule
 function DatabaseService:new()
   local instance = setmetatable({}, DatabaseService)
   ---@diagnostic disable-next-line: unused-local
-  local db = sqlite3.open(DatabaseService.database_url)
+  instance.db = sqlite3.open(DatabaseService.database_url)
   ---@diagnostic disable-next-line: unused-local
-  local logger = Logger:new()
+  instance.logger = Logger:new()
   return instance
 end
 
+---@type fun(): boolean
+---@param self DbServiceModule
+---@param sql_string string
 function DatabaseService:new_model(sql_string)
   self.db:exec("BEGIN TRANSACTION;")
 
@@ -40,6 +55,9 @@ function DatabaseService:new_model(sql_string)
   end
 end
 
+---@type fun(): DbServiceModule|nil
+---@param self DbServiceModule
+---@param row string
 function DatabaseService:select_from(row)
   if not row then
     self.logger:error("[DatabaseService] :select_from(row) expected a row name")
@@ -50,6 +68,9 @@ function DatabaseService:select_from(row)
   return self
 end
 
+---@type fun(): table
+---@param self DbServiceModule
+---@param values string
 function DatabaseService:where_values(values)
   local stmt = self.db:prepare("SELECT * FROM " .. DatabaseService.current.row .. " WHERE ?")
   stmt:bind_values(values)

@@ -27,7 +27,7 @@ local colors = {
 }
 
 ---@type fun(): string
-local datetime = function()
+local function datetime()
   local current_time = os.date("*t")
 
   ---datetime as "day/month/year, hour:minutes:seconds"
@@ -48,7 +48,7 @@ end
 ---@param type string
 ---@param color string
 ---@param message string
-local format = function(type, color, message)
+local function format(type, color, message)
   local msg =
     string.format("[ %s%s%s ] - %s - %s%s%s", color, type, colors.reset, datetime(), color, message, colors.reset)
   return msg

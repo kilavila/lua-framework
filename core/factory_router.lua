@@ -54,6 +54,7 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
   ---@field status number
   ---@field errors? ErrorResponse[]
   ---@field data? table<any>
+  ---@field meta? table<any>
 
   ---@type HttpResponse
   local response = {

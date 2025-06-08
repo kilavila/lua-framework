@@ -16,6 +16,11 @@ local Logger = require("core.utils.logging")
 ---@field logger LoggerModule
 ---@field new fun(self: TestModule): TestModule
 ---@field check_tables fun(self: TestModule, result: table, expected: table): boolean
+---@field expect fun(self: TestModule, title: string, func: fun(): any): TestModule
+---@field to_be fun(self: TestModule, result: any): TestModule
+---@field to_be_type fun(self: TestModule, expected_type: string): TestModule
+---@field log fun(self: TestModule): nil
+---@field summary fun(self: TestModule): nil
 local Test = {
   current = {
     time = {
@@ -78,7 +83,10 @@ function Test:check_tables(result, expected)
   return tables_are_identical
 end
 
--- INFO: expect()
+---@type fun(): TestModule
+---@param self TestModule
+---@param title string
+---@param func fun(): any
 function Test:expect(title, func)
   self.current.time = {}
   self.current.time.start = os.clock()
@@ -89,7 +97,9 @@ function Test:expect(title, func)
   return self
 end
 
--- INFO: to_be()
+---@type fun(): TestModule
+---@param self TestModule
+---@param result any
 function Test:to_be(result)
   if not result then
     self.logger:error("Function 'to_be()' expects a parameter")
@@ -127,7 +137,9 @@ function Test:to_be(result)
   return self
 end
 
--- INFO: to_be_type()
+---@type fun(): TestModule
+---@param self TestModule
+---@param expected_type string
 function Test:to_be_type(expected_type)
   if not expected_type then
     self.logger:error("Function 'to_be_type()' expects a parameter")
@@ -156,7 +168,8 @@ function Test:to_be_type(expected_type)
   return self
 end
 
--- INFO: log()
+---@type fun(): nil
+---@param self TestModule
 function Test:log()
   local overall_status = colors.green .. "PASS" .. colors.reset
 
@@ -196,7 +209,8 @@ function Test:log()
   end
 end
 
--- INFO: summary()
+---@type fun(): nil
+---@param self TestModule
 function Test:summary()
   local summary = string.format("[ %sSUMMARY%s ]", colors.blue, colors.reset)
   local passed = string.format("%s𜱺 %s passed%s", colors.green, self.passed, colors.reset)

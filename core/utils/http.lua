@@ -2,6 +2,7 @@ local json = require("cjson")
 
 ---@class HttpModule
 ---@field new fun(self: HttpModule): HttpModule
+---@field respond fun(self: HttpModule, client: table, response: HttpResponse, origin_header: string): nil
 local Http = {}
 Http.__index = Http
 
@@ -71,6 +72,9 @@ local responses = {
 
 ---@type fun(): nil
 ---@param self HttpModule
+---@param client table
+---@param response HttpResponse
+---@param origin_header string
 function Http:respond(client, response, origin_header)
   local status = responses[tostring(response.status)]
   local response_json = json.encode({

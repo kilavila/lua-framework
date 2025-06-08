@@ -1,5 +1,9 @@
 local Routes = require("src.router")
 
+---@type fun(): string
+---@param method string
+---@param route string
+---@param endpoint string
 local function title(method, route, endpoint)
   if not method or not route or not endpoint then
     return ""
@@ -9,6 +13,8 @@ local function title(method, route, endpoint)
   return html
 end
 
+---@type fun(): string
+---@param desc string
 local function description(desc)
   if not desc then
     return ""
@@ -18,6 +24,8 @@ local function description(desc)
   return html
 end
 
+---@type fun(): string
+---@param params table
 local function parameters(params)
   if not params then
     return ""
@@ -50,6 +58,8 @@ local function parameters(params)
   return html
 end
 
+---@type fun(): string
+---@param req string[]
 local function example_request(req)
   if not req then
     return ""
@@ -71,6 +81,8 @@ local function example_request(req)
   return html
 end
 
+---@type fun(): string
+---@param res string[]
 local function example_response(res)
   if not res then
     return ""
@@ -92,6 +104,7 @@ local function example_response(res)
   return html
 end
 
+---@type fun(): string
 local function create_routes_table()
   local html = ""
 
@@ -101,7 +114,7 @@ local function create_routes_table()
         <div class="endpoint ]] .. string.lower(entity.method) .. [[">]]
 
       routes_html = routes_html
-        .. title(entity.method, route, endpoint)
+        .. title(entity.method, tostring(route), endpoint)
         .. description(entity.docs.description)
         .. parameters(entity.docs.parameters)
         .. example_request(entity.docs.request)
