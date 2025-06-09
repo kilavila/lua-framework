@@ -1,7 +1,6 @@
 local RequestHandler = require("core.utils.request_handler")
 local Http = require("core.utils.http")
 local Logger = require("core.utils.logging")
-
 local Docs = require("core.docs.render_template")
 
 ---| Routing module for the application

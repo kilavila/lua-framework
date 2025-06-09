@@ -2,44 +2,7 @@ local socket = require("socket")
 local FactoryRouter = require("core.factory_router")
 local Logger = require("core.utils.logging")
 local Routes = require("src.router")
-
----| Print ascii art on application start
----@type fun(): nil
-local function print_ascii_art()
-  local ascii = "\r\n"
-    .. "\r\n"
-    .. "                      ---  --   --  --        -------      \r\n"
-    .. "                  ---                   --  -----------    \r\n"
-    .. "               --                           ------------   \r\n"
-    .. "            --          -------------       ------------   \r\n"
-    .. "                    --------------------    -----------    \r\n"
-    .. "         --      --------------------------   -------      \r\n"
-    .. "               ---------------------     ----              \r\n"
-    .. "       -      --------------------         ---      --     \r\n"
-    .. "             --------------------           ---            \r\n"
-    .. "     --     ---------------------           ----           \r\n"
-    .. "     -     ----------------------          ------     -    \r\n"
-    .. "           ------------------------      --------          \r\n"
-    .. "    --     ------  -------------------------------    --   \r\n"
-    .. "           ------ --------------------- ----------         \r\n"
-    .. "    --     ------ --------  ----  --  ---  -------    --   \r\n"
-    .. "           ------ --------  ----  -------- ------          \r\n"
-    .. "     --    ------ --------- ----  --   --- ------     -    \r\n"
-    .. "            ----- --------  ----  -- ----- -----     --    \r\n"
-    .. "      -      ----        --    ------    -  ---            \r\n"
-    .. "       -      --------------------------------      --     \r\n"
-    .. "                --------- Framework ---------              \r\n"
-    .. "         -        ------ by kilavila ------       -        \r\n"
-    .. "           --       --------------------        -          \r\n"
-    .. "                        ------------           -           \r\n"
-    .. "              ---                          ---             \r\n"
-    .. "                  --                    --                 \r\n"
-    .. "                      --- ---  --  ---                     \r\n"
-    .. "\r\n"
-    .. "\r\n"
-
-  print("\27[34m" .. ascii .. "\27[0m")
-end
+local print_ascii_art = require("core.utils.ascii_art")
 
 ---| The core module of the application.
 ---| Handles configuration and listens for requests.
@@ -51,20 +14,6 @@ end
 ---@field config fun(self: FactoryModule, config?: FactoryConfiguration): nil ---| Overrides default configuration
 ---@field listen fun(self: FactoryModule): nil ---| Tells the application to listen on specified port
 local Factory = {
-  ---| Config table for the application.
-  ---| Default config:
-  ---|
-  ---|  {
-  ---|    enable_cors = false,
-  ---|    allowed_origins = nil,
-  ---|    port = 5000,
-  ---|    ascii_art = true,
-  ---|  }
-  ---@class FactoryConfiguration
-  ---@field enable_cors? boolean
-  ---@field allowed_origins? table|nil
-  ---@field port? number
-  ---@field ascii_art? boolean
   configuration = {
     enable_cors = false,
     allowed_origins = nil,

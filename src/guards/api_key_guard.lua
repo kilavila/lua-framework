@@ -1,19 +1,21 @@
 local Logger = require("core.utils.logging")
 local env = require("src._environment")
 
--- This is an example of a guard decorator for API key validation.
--- The decorator checks for the presence of the 'x-API-key' header
--- in the incoming request. If the header is present, it verifies
--- whether the provided API key matches the expected key.
---
--- ┌─────────────────────┐       ┌─────────────────────┐       ┌─────────────────────┐
--- │                     │       │                     │       │                     │
--- │       Router        │ ─────▶│        Guard        │ ─────▶│      Controller     │
--- │                     │       │                     │       │                     │
--- └─────────────────────┘       └─────────────────────┘       └─────────────────────┘
---
--- If the API key is valid, the request is allowed to proceed;
--- otherwise, an appropriate error response is returned.
+--[[
+    This is an example of a guard decorator for API key validation.
+    The decorator checks for the presence of the 'x-API-key' header
+    in the incoming request. If the header is present, it verifies
+    whether the provided API key matches the expected key.
+
+    ┌─────────────────────┐       ┌─────────────────────┐       ┌─────────────────────┐
+    │                     │       │                     │       │                     │
+    │       Router        │ ─────▶│        Guard        │ ─────▶│      Controller     │
+    │                     │       │                     │       │                     │
+    └─────────────────────┘       └─────────────────────┘       └─────────────────────┘
+
+    If the API key is valid, the request is allowed to proceed;
+    otherwise, an appropriate error response is returned.
+--]]
 
 ---@type Guard
 local function api_key_guard(func)

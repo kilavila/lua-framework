@@ -9,39 +9,30 @@ local function bootstrap()
   ---@type FactoryModule
   local app = Factory:new()
 
-  -- The app has some default configurations.
-  -- There is f.ex. no need to change the port
-  -- but if you want to use a custom configuration
-  -- you can pass in a table like so:
-
-  -- TODO:
-  -- Encryption and hashing
-  -- Rate limiting?
-  -- Websockets?
-  -- Add caching?
-  -- Serialization?
-  -- Cron jobs?
-  -- ORM similar to prisma?
-  -- Add database config for SQL and NoSQL?
-  -- Multiple databases?
-  -- Header or URI versioning?
-  -- Controller specific or endpoint or both and global default?
+  --[[
+      The app has some default configurations.
+      There is f.ex. no need to change the port
+      but if you want to use a custom configuration
+      you can pass in a table like so:
+  --]]
 
   ---@type FactoryConfiguration
   local config = {
-    -- Define the allowed origins
-    -- You don't have to use both allowed_origins and enable_cors.
-    -- Setting either one is fine, but if you set both
-    -- then allowed_origins will override enable_cors!
-    --
-    -- Example:
-    --
-    -- allowed_origins = {
-    --   ["localhost"] = true,
-    --   ["127.0.0.1"] = true,
-    --   ["http://example.com"] = true,
-    --   ["http://another-example.com"] = true,
-    -- },
+    --[[
+        Define the allowed origins
+        You don't have to use both allowed_origins and enable_cors.
+        Setting either one is fine, but if you set both
+        then allowed_origins will override enable_cors!
+
+        Example:
+
+        allowed_origins = {
+          ["localhost"] = true,
+          ["127.0.0.1"] = true,
+          ["http://example.com"] = true,
+          ["http://another-example.com"] = true,
+        },
+    --]]
 
     -- Do not show ascii art on server start
     -- ascii_art = false,
@@ -57,3 +48,17 @@ local function bootstrap()
 end
 
 bootstrap()
+
+--[[ TODO:
+     Encryption and hashing
+     Rate limiting?
+     Websockets?
+     Add caching?
+     Serialization?
+     Cron jobs?
+     ORM similar to prisma?
+     Add database config for SQL and NoSQL?
+     Multiple databases?
+     Header or URI versioning?
+     Controller specific or endpoint or both and global default?
+--]]

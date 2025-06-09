@@ -33,6 +33,21 @@
 ---@alias GuardFunction fun(request: RequestData): HttpResponse
 ---@alias Guard fun(func: EntityFunction): GuardFunction
 
+---| Config table for the application.
+---| Default config:
+---|
+---|  {
+---|    enable_cors = false,
+---|    allowed_origins = nil,
+---|    port = 5000,
+---|    ascii_art = true,
+---|  }
+---@class FactoryConfiguration
+---@field enable_cors? boolean
+---@field allowed_origins? table|nil
+---@field port? number
+---@field ascii_art? boolean
+
 ---| Incoming request data that has been parsed.
 ---@class RequestData
 ---@field body table|nil ---| The request body.
@@ -54,10 +69,14 @@
 ---@class ErrorResponse
 ---@field message string ---| Error message.
 
+---| Http status code.
+---| See: [MDN: HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status).
+---@alias HttpStatusCode number
+
 ---| Lua table to return as response.
 ---| Will be parsed to JSON data by HttpModule.
 ---@class HttpResponse
----@field status number ---| Http status code.
+---@field status HttpStatusCode
 ---@field errors? ErrorResponse[]
 ---@field data? table<any> ---| Lua table with data to return as Http response.
 ---@field meta? table<any> ---| Lua table with meta data to return with the response.
