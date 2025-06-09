@@ -15,11 +15,8 @@ local env = require("src._environment")
 -- If the API key is valid, the request is allowed to proceed;
 -- otherwise, an appropriate error response is returned.
 
----@type fun(): fun()
----@param func fun(request: RequestData)
+---@type Guard
 local function api_key_guard(func)
-  ---@type fun()
-  ---@param request RequestData
   return function(request)
     ---@type LoggerModule
     local logger = Logger:new()

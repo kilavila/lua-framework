@@ -28,29 +28,19 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
   print("")
   self.logger:info("[Request] " .. request)
 
+  ---@type HttpRequest|nil
   local parsed_request = self.request_handler:parse(client, request, configuration)
   if not parsed_request then
     return
   end
 
   -- return HTML and static files for /docs endpoint
+  ---@type boolean
   local served_docs =
     self.docs:route_handler(client, parsed_request.method, parsed_request.controller, parsed_request.endpoint)
   if served_docs then
     return
   end
-
-  ---| Array of tables containing error messages.
-  ---@class ErrorResponse
-  ---@field message string
-
-  ---| Lua table to return as response.
-  ---| Will be parsed to JSON data by HttpModule.
-  ---@class HttpResponse
-  ---@field status number
-  ---@field errors? ErrorResponse[]
-  ---@field data? table<any>
-  ---@field meta? table<any>
 
   ---@type HttpResponse
   local response = {
@@ -61,6 +51,7 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
     },
   }
 
+  ---@type Controller
   local controller = routes[parsed_request.controller]
   if not controller then
     self.logger:error("[Router] Controller not found!")
@@ -68,6 +59,7 @@ function FactoryRouter:handle_request(client, request, routes, configuration)
     return
   end
 
+  ---@type Entity
   local entity = controller.entities[parsed_request.endpoint]
   if not entity then
     self.logger:error("[Router] Endpoint not found!")

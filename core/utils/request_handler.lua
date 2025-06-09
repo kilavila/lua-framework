@@ -64,13 +64,7 @@ function RequestHandler:parse(client, request, configuration)
     body = self.request_extractor:body(client, headers["content-length"])
   end
 
-  ---@class RequestData
-  ---@field body table|nil
-  ---@field headers table
-  ---@field method string
-  ---@field origin string
-  ---@field params table|nil
-  ---@field route string
+  ---@type RequestData
   local req_data = {
     body = body,
     headers = headers,
@@ -80,12 +74,7 @@ function RequestHandler:parse(client, request, configuration)
     route = route,
   }
 
-  ---@class HttpRequest
-  ---@field controller string
-  ---@field endpoint string
-  ---@field method string
-  ---@field origin_header string|nil
-  ---@field req RequestData
+  ---@type HttpRequest
   local req = {
     controller = controller,
     endpoint = endpoint,

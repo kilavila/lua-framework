@@ -28,21 +28,76 @@ local api_key_guard = require("src.guards.api_key_guard")
 -- Similarly, the `entities` table contains definitions for various endpoints,
 -- allowing for organized management of the application's API structure.
 
----@class Docs
----@field description? string
----@field request? string[]
----@field response? string[]
+---@type Entity
+local app_test = {
+  method = "GET", -- HTTP method for this endpoint.
+  fun = api_key_guard(AppController.test), -- Function wrapped with the guard decorator.
+  docs = {
+    description = "Endpoint for testing API Key guard",
+    request = {
+      "http GET :3000/app/test 'x-API-key: my_secret_key'",
+    },
+    response = {
+      "{",
+      '  "data": [',
+      '    { "message": "Congrats!" }',
+      "  ]",
+      "}",
+    },
+  },
+}
 
----@class Entity
----@field method string
----@field fun fun()
----@field docs? Docs
+---@type Entity
+local app_status = {
+  method = "GET", -- HTTP method for this endpoint.
+  fun = AppController.status, -- Function to handle requests to this endpoint.
+  docs = {
+    description = "Check status of the API",
+    -- parameters = {
+    --   {
+    --     name = "version",
+    --     description = "What version to use.",
+    --     type = "string",
+    --     required = "false",
+    --   },
+    -- },
+    request = {
+      "http GET :3000/app/status",
+    },
+    response = {
+      "{",
+      '  "data": [',
+      '    { "message": "Server online!" }',
+      "  ]",
+      "}",
+    },
+  },
+}
 
----@class Controller
----@field name string
----@field entities table<{ [string]: Entity }>
+---@type Controller
+local app_controller = {
+  -- The name of the controller associated with this route.
+  -- This name is used by the core application and for logging purposes.
+  name = "AppController",
 
----@type table<{ [string]: Controller }>
+  entities = {
+    -- The following rules apply to entities within a controller:
+    -- 1. Must be unique within the context of the controller.
+    -- 2. Must start with a forward slash ("/").
+    -- 3. Must have a descriptive name; an entity cannot simply be "/".
+    -- 4. Can contain multiple segments (e.g., "/status/example") and names.
+    --
+    -- Examples of valid and invalid entities:
+    -- ["/"] -- Not working: This entity lacks a name.
+    -- ["/status/example"] -- OK: This entity is valid and properly defined.
+
+    -- Example of a request using a guard decorator for API key validation.
+    ["/test"] = app_test,
+    ["/status"] = app_status,
+  },
+}
+
+---@type Routes
 local Routes = {
   -- Route Definitions
   --
@@ -55,68 +110,7 @@ local Routes = {
   -- ["/"] -- Not working: This route lacks a name.
   -- ["/app/example"] -- Not working: This route is not defined correctly.
 
-  ["/app"] = {
-    -- The name of the controller associated with this route.
-    -- This name is used by the core application and for logging purposes.
-    name = "AppController",
-
-    entities = {
-      -- The following rules apply to entities within a controller:
-      -- 1. Must be unique within the context of the controller.
-      -- 2. Must start with a forward slash ("/").
-      -- 3. Must have a descriptive name; an entity cannot simply be "/".
-      -- 4. Can contain multiple segments (e.g., "/status/example") and names.
-      --
-      -- Examples of valid and invalid entities:
-      -- ["/"] -- Not working: This entity lacks a name.
-      -- ["/status/example"] -- OK: This entity is valid and properly defined.
-
-      -- Example of a request using a guard decorator for API key validation.
-      ["/test"] = {
-        method = "GET", -- HTTP method for this endpoint.
-        fun = api_key_guard(AppController.test), -- Function wrapped with the guard decorator.
-        docs = {
-          description = "Endpoint for testing API Key guard",
-          request = {
-            "http GET :3000/app/test 'x-API-key: my_secret_key'",
-          },
-          response = {
-            "{",
-            '  "data": [',
-            '    { "message": "Congrats!" }',
-            "  ]",
-            "}",
-          },
-        },
-      }, -- ["/test"]
-
-      ["/status"] = {
-        method = "GET", -- HTTP method for this endpoint.
-        fun = AppController.status, -- Function to handle requests to this endpoint.
-        docs = {
-          description = "Check status of the API",
-          -- parameters = {
-          --   {
-          --     name = "version",
-          --     description = "What version to use.",
-          --     type = "string",
-          --     required = "false",
-          --   },
-          -- },
-          request = {
-            "http GET :3000/app/status",
-          },
-          response = {
-            "{",
-            '  "data": [',
-            '    { "message": "Server online!" }',
-            "  ]",
-            "}",
-          },
-        },
-      }, -- ["/status"]
-    },
-  },
+  ["/app"] = app_controller,
 }
 
 return Routes

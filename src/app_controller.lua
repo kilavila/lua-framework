@@ -3,10 +3,10 @@ local AppService = require("src.app_service")
 
 --- AppController class defined in 'src.types.types'
 ---@class AppController
+---@field status fun(request: RequestData): HttpResponse
+---@field test fun(request: RequestData): HttpResponse
 local AppController = {}
 
----@type fun(): HttpResponse
----@param request HttpRequest
 function AppController.status(request)
   -- This function serves as an example of a controller in the application.
   -- Controllers are responsible for processing incoming requests,

@@ -1,6 +1,7 @@
+---@class AppService
+---@field status fun(): HttpResponse
 local AppService = {}
 
----@type fun(): HttpResponse
 function AppService.status()
   -- This function serves as an example of a service method within the AppService.
   -- It is responsible for handling data operations, such as storage and retrieval,
@@ -17,11 +18,6 @@ function AppService.status()
     },
   }
 
-  return response
-end
-
-function AppService.echo(message)
-  local response = "Echo: " .. message
   return response
 end
 
