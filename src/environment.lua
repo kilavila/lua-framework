@@ -13,8 +13,7 @@
 
 ---@type table
 local environment = {
-  -- TODO: JWT
-  -- jwt_secret = "some_secret_key",
+  jwt_secret = "some_secret_key",
   api_key = "my_secret_key",
 }
 

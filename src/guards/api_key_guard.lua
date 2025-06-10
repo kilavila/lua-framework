@@ -1,5 +1,5 @@
 local Logger = require("core.utils.logging")
-local env = require("src._environment")
+local env = require("src.environment")
 
 --[[
     This is an example of a guard decorator for API key validation.

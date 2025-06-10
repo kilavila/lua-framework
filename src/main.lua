@@ -50,15 +50,10 @@ end
 bootstrap()
 
 --[[ TODO:
-     Encryption and hashing
-     Rate limiting?
+     ORM similar to prisma?
+     Encryption and hashing?
      Websockets?
      Add caching?
      Serialization?
      Cron jobs?
-     ORM similar to prisma?
-     Add database config for SQL and NoSQL?
-     Multiple databases?
-     Header or URI versioning?
-     Controller specific or endpoint or both and global default?
 --]]
