@@ -13,8 +13,8 @@
 
 ---@type table
 local environment = {
-  jwt_secret = "some_secret_key",
-  api_key = "my_secret_key",
+  jwt_secret = "owZVhBaU9pSktWMVFpTENKaGJHY2lPaUpJVXpJMU5pSjkuZXlKemRXSWlPaUl4TW",
+  api_key = "b295688a2bdee36aac7548afd28c73d9e32899af",
 }
 
 return environment

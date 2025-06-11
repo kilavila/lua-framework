@@ -1,3 +1,4 @@
+local Exception = require("core.utils.exceptions")
 local Logger = require("core.utils.logging")
 local env = require("src.environment")
 
@@ -20,6 +21,11 @@ local env = require("src.environment")
 ---@type Guard
 local function api_key_guard(func)
   return function(request)
+    -- Create new instance of 'Exception' and 'Logger'
+
+    ---@type HttpExceptionModule
+    local exception = Exception:new()
+
     ---@type LoggerModule
     local logger = Logger:new()
 
@@ -31,50 +37,27 @@ local function api_key_guard(func)
     if not env.api_key then
       logger:error("[Guard] Could not find env.api_key {api_key_guard}")
 
-      ---@type HttpResponse
-      local response = {
-        status = 500,
-        errors = {
-          { message = "Environment Configuration Error." },
-          { message = "Please ensure that all required environment variables are set, including 'api_key'." },
-        },
-      }
-
-      return response
+      return exception:InternalServerError({
+        "Environment Configuration Error.",
+        "Please ensure that all required environment variables are set, including 'api_key'.",
+      })
     end
 
     -- If no API key
     if not key then
-      ---@type HttpResponse
-      local response = {
-        status = 401,
-        errors = {
-          { message = "No API key was provided." },
-        },
-      }
-
-      return response
+      return exception:Unauthorized({ "No API Key provided." })
     end
 
     -- If wrong API key
     if key ~= env.api_key then
-      ---@type HttpResponse
-      local response = {
-        status = 401,
-        errors = {
-          { message = "The provided API key is incorrect." },
-        },
-      }
-
-      return response
+      return exception:Unauthorized({ "Invalid API Key." })
     end
 
     -- If correct API key, continue handling the request
     ---@type HttpResponse
     local result = func(request)
 
-    -- Return the result of the request back to the
-    -- router and the HttpModule
+    -- Return the result of the request back to the router and the HttpModule
     return result
   end
 end
